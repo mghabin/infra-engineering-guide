@@ -1,0 +1,17 @@
+# markdownlint config — pragmatic; the goal is consistency, not nitpicking.
+default: true
+
+# Long lines are fine for prose. Code fences and tables also exceed 80 cols.
+MD013: false
+
+# We intentionally use HTML in some places (badges, details/summary).
+MD033: false
+
+# Inline code in headings is fine.
+MD038: false
+
+# First line doesn't have to be H1; the README has a badge above.
+MD041: false
+
+# Bare URLs are fine in references sections.
+MD034: false
