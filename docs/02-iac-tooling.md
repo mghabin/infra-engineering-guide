@@ -238,7 +238,7 @@ native `terraform test` (1.6+), Pulumi's testing harness. Real `apply` into a
 sandbox; slow, run nightly or per-release.
 
 **Must — at least one static and one policy scanner gate every PR.** Checkov
-+ tflint is the safe default. Scanning the *plan output*, not just source,
+- tflint is the safe default. Scanning the *plan output*, not just source,
 catches issues that depend on resolved variable values.
 
 **Should — codify org-specific policy as OPA/Rego or Sentinel and gate apply
