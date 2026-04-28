@@ -1,6 +1,8 @@
 # infra-engineering-guide
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/mghabin/infra-engineering-guide/badge)](https://securityscorecards.dev/viewer/?uri=github.com/mghabin/infra-engineering-guide)
+[![CI](https://github.com/mghabin/infra-engineering-guide/actions/workflows/ci.yml/badge.svg)](https://github.com/mghabin/infra-engineering-guide/actions/workflows/ci.yml)
 
 An opinionated, cloud-agnostic reference for engineering modern
 infrastructure: Infrastructure-as-Code, CI/CD, container platforms,
