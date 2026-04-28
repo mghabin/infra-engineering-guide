@@ -9,7 +9,7 @@ annotation lists the chapters that draw on each source.
 
 ---
 
-### Books
+## Books
 
 - **Adam Shostack — Threat Modeling: Designing for Security**. [https://shostack.org/books/threat-modeling-book](https://shostack.org/books/threat-modeling-book). Cited in: ch. 06.
 - **Brendan Gregg — BPF Performance Tools**. [https://www.brendangregg.com/bpf-performance-tools-book.html](https://www.brendangregg.com/bpf-performance-tools-book.html). Cited in: ch. 05.
@@ -32,7 +32,7 @@ annotation lists the chapters that draw on each source.
 - **Skelton & Pais — Team Topologies (IT Revolution, 2019)** — (2019). [https://teamtopologies.com/book](https://teamtopologies.com/book). Cited in: ch. 03.
 - **How to Talk to a Cloud Provider About Money** — The Duckbill Group. [https://www.duckbillgroup.com/](https://www.duckbillgroup.com/). Cited in: ch. 10.
 
-### Standards & RFCs
+## Standards & RFCs
 
 - **BCP 38 / RFC 2827 — Network Ingress Filtering**. [https://datatracker.ietf.org/doc/html/bcp38](https://datatracker.ietf.org/doc/html/bcp38). Cited in: ch. 07.
 - **OpenGitOps Principles v1.0.0** — CNCF GitOps Working Group. [https://opengitops.dev/](https://opengitops.dev/). Cited in: ch. 01.
@@ -63,7 +63,7 @@ annotation lists the chapters that draw on each source.
 - **W3C — Baggage**. [https://www.w3.org/TR/baggage/](https://www.w3.org/TR/baggage/). Cited in: ch. 05.
 - **W3C — Trace Context Recommendation**. [https://www.w3.org/TR/trace-context/](https://www.w3.org/TR/trace-context/). Cited in: ch. 05.
 
-### Vendor & project documentation
+## Vendor & project documentation
 
 - **Amazon Aurora: Design Considerations for High Throughput Cloud-Native Relational Databases** — ACM SIGMOD 2017. [https://www.allthingsdistributed.com/files/p1041-verbitski.pdf](https://www.allthingsdistributed.com/files/p1041-verbitski.pdf). Cited in: ch. 08.
 - **Three Mile Island and the SCAM principle** — Adaptive Capacity Labs. [https://www.adaptivecapacitylabs.com/blog/](https://www.adaptivecapacitylabs.com/blog/). Cited in: ch. 09.
@@ -301,7 +301,7 @@ annotation lists the chapters that draw on each source.
 - **RabbitMQ Documentation** — VMware / rabbitmq.com. [https://www.rabbitmq.com/documentation.html](https://www.rabbitmq.com/documentation.html). Cited in: ch. 08.
 - **DevOps (Wikipedia)** — Wikipedia (2008). [https://en.wikipedia.org/wiki/DevOps](https://en.wikipedia.org/wiki/DevOps). Cited in: ch. 01.
 
-### Industry analysis & talks
+## Industry analysis & talks
 
 - **Akamai SIRT — XZ Utils backdoor (CVE-2024-3094) deep dive** — (2024). [https://www.akamai.com/blog/security-research/critical-linux-backdoor-xz-utils-discovered-what-to-know](https://www.akamai.com/blog/security-research/critical-linux-backdoor-xz-utils-discovered-what-to-know). Cited in: ch. 03.
 - **The Cost of Cloud, a Trillion Dollar Paradox** — Andreessen Horowitz. [https://a16z.com/the-cost-of-cloud-a-trillion-dollar-paradox/](https://a16z.com/the-cost-of-cloud-a-trillion-dollar-paradox/). Cited in: ch. 10.
@@ -347,7 +347,7 @@ annotation lists the chapters that draw on each source.
 - **A Conversation with Werner Vogels (interviewed by Jim Gray)** — Werner Vogels (2006). [https://queue.acm.org/detail.cfm?id=1142065](https://queue.acm.org/detail.cfm?id=1142065). Cited in: ch. 01, ch. 08.
 - **William Morgan — The Service Mesh Manifesto / Do you need one?**. [https://buoyant.io/service-mesh-manifesto](https://buoyant.io/service-mesh-manifesto). Cited in: ch. 04.
 
-### Named industry voices
+## Named industry voices
 
 - **Brendan Gregg — Flame Graphs**. [https://www.brendangregg.com/flamegraphs.html](https://www.brendangregg.com/flamegraphs.html). Cited in: ch. 05.
 - **Brendan Gregg — The USE Method**. [https://www.brendangregg.com/usemethod.html](https://www.brendangregg.com/usemethod.html). Cited in: ch. 05.
@@ -379,7 +379,7 @@ annotation lists the chapters that draw on each source.
 - **Tim Hockin — on dropping CPU limits in Kubernetes**. [https://twitter.com/thockin/status/1134193838841401345](https://twitter.com/thockin/status/1134193838841401345). Cited in: ch. 04.
 - **Tom Wilkie — RED Method for Microservices**. [https://thenewstack.io/monitoring-microservices-red-method/](https://thenewstack.io/monitoring-microservices-red-method/). Cited in: ch. 05.
 
-### Postmortems & incident writeups
+## Postmortems & incident writeups
 
 - **Andres Freund — xz-utils backdoor disclosure (CVE-2024-3094) and follow-up analyses** — (2024). [https://www.openwall.com/lists/oss-security/2024/03/29/4](https://www.openwall.com/lists/oss-security/2024/03/29/4). Cited in: ch. 06.
 - **Codecov bash uploader incident — disclosure and timeline (April 2021)** — (2021). [https://about.codecov.io/security-update/](https://about.codecov.io/security-update/). Cited in: ch. 06.
