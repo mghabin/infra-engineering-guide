@@ -24,3 +24,6 @@ MD032: false
 
 # Many fenced blocks are pseudocode/output; language tag isn't always meaningful.
 MD040: false
+
+# Adjacent blockquotes (e.g., short conventions note + opening position) are common.
+MD028: false
