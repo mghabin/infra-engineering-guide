@@ -56,6 +56,18 @@ infrastructure ages well**, not about a single subsystem:
   review. Print it, paste it into your PR template, or use it as the
   cliff-notes for the rest of this guide.
 
+## Cross-cutting
+
+- [`docs/decision-trees.md`](./docs/decision-trees.md) — the
+  highest-leverage decisions and one-screen decision trees for the
+  questions teams actually argue about (which IaC tool, adopt
+  Kubernetes, service mesh y/n, multi-region, SLO model, cost
+  guardrails). Cross-references the chapters.
+- [`glossary.md`](./glossary.md) — canonical, opinionated definitions
+  for every term used normatively in this guide. Where the industry
+  uses a term inconsistently, the glossary picks a side and cites a
+  primary source.
+
 ## A worked example
 
 Many of these practices are applied end-to-end in a small reference
