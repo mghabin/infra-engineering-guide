@@ -277,7 +277,7 @@ Backoff with Jitter", AWS Builders' Library; Nygard, *Release It!* 2e):
 - **Idempotency keys** on any retried mutation. Without them, retries are
   duplicate-charges-as-a-service.
 - **Load shedding** at the edge before queues build. Reject early with 503
-  + Retry-After; do not let work pile up unbounded.
+  - Retry-After; do not let work pile up unbounded.
 
 ---
 
