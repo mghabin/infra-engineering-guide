@@ -101,7 +101,7 @@ S3 bucket, removes `prevent_destroy`, attaches `*` IAM, or provisions a
 six-figure-monthly resource must fail the pipeline before it reaches an
 approver, not after. Tooling: OPA/Rego + Conftest, Kyverno, Checkov,
 tfsec/Trivy, HashiCorp Sentinel; pick one per pipeline, not three.
-- Sources: Open Policy Agent docs, *Policy language (Rego)*, https://www.openpolicyagent.org/docs/latest/ ; CNCF, *OPA graduated project announcement (Feb 2021)*, https://www.cncf.io/announcements/2021/02/04/cloud-native-computing-foundation-announces-open-policy-agent-graduation/ ; Morris *IaC* (3rd ed), Ch. 9.
+- Sources: Open Policy Agent docs, *Policy language (Rego)*, https://www.openpolicyagent.org/docs/latest/ ; CNCF, *OPA graduated project announcement (Feb 2021)*, https://www.cncf.io/announcement/2021/02/04/cloud-native-computing-foundation-announces-open-policy-agent-graduation/ ; Morris *IaC* (3rd ed), Ch. 9.
 - Concrete check: every IaC pipeline runs at least one policy engine against `plan` output and blocks merge on failure. Policies live in the same repo (or a sibling) and are themselves PR-reviewed.
 
 **[IaC PRINCIPLES] [should] Provider and module supply chain is hash-locked, signed where possible, and lockfiles are committed.**
@@ -462,7 +462,7 @@ inevitable.
 - OpenGitOps Principles v1.0.0 (CNCF GitOps Working Group) — https://opengitops.dev/ ; version-stable: https://github.com/open-gitops/documents/releases/tag/v1.0.0
 - Kubernetes documentation, *Controllers* — https://kubernetes.io/docs/concepts/architecture/controller/
 - Kubernetes documentation, *Server-Side Apply* — https://kubernetes.io/docs/reference/using-api/server-side-apply/
-- Open Policy Agent — https://www.openpolicyagent.org/docs/latest/ ; CNCF graduation (Feb 2021) — https://www.cncf.io/announcements/2021/02/04/cloud-native-computing-foundation-announces-open-policy-agent-graduation/
+- Open Policy Agent — https://www.openpolicyagent.org/docs/latest/ ; CNCF graduation (Feb 2021) — https://www.cncf.io/announcement/2021/02/04/cloud-native-computing-foundation-announces-open-policy-agent-graduation/
 
 ### Vendor / project documentation (canonical statement of a pattern, not product endorsement)
 - OpenTofu (Linux Foundation), *Manifesto* — https://opentofu.org/manifesto/

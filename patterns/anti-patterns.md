@@ -208,7 +208,7 @@ You'll ship cardinality bombs into a metered backend and discover the cost
 when the bill arrives. **Fix:** decide on signals (RED/USE), naming, label
 budget, and retention *first*; pick the vendor against that strategy.
 [See ch. 05 — Observability](../docs/05-observability.md) ·
-<https://www.honeycomb.io/blog/we-shipped-a-major-feature-without-it-being-done>
+<https://www.honeycomb.io/blog>
 
 ### **Ticket-noise pages and "auto-resolves in a few minutes" alerts**
 Alert fatigue causes on-call attrition, which is the most expensive bug in the
@@ -283,7 +283,7 @@ the normal pipeline produces signed builds, SBOMs, provenance attestations
 (SLSA), and audit logs; compliance reads from those, not its own copy.
 [See ch. 06 — Security & supply chain](../docs/06-security-supply-chain.md) ·
 <https://slsa.dev/spec/> ·
-<https://openssf.org/projects/s2c2f/>
+<https://github.com/ossf/s2c2f>
 
 ---
 
@@ -324,9 +324,10 @@ global addresses (or ULA for genuinely-internal segments) + edge firewall.
 
 ### **Treating a private subnet as a security boundary**
 Without IAM and mTLS it's just an obscured boundary — anyone who lands inside
-the VPC owns everything. **Fix:** zero-trust between services (mTLS via mesh
-or SPIFFE/SPIRE), IAM-scoped data access, network segmentation as defence in
-depth not as the only defence.
+the VPC owns everything. **Fix:** zero-trust between services (mTLS; see
+ch04 §9 for whether to deliver it via CNI L4 transport-only, ambient mesh,
+sidecar mesh, or app-issued certs), IAM-scoped data access, network
+segmentation as defence in depth not as the only defence.
 [See ch. 07 — Networking](../docs/07-networking.md) ·
 <https://csrc.nist.gov/publications/detail/sp/800-207/final>
 
@@ -377,7 +378,8 @@ YugabyteDB) and budget for the Jepsen review.
 <https://jepsen.io/analyses>
 
 ### **Self-hosted Kafka without a dedicated streaming-platform team**
-Kafka operations (broker upgrades, rebalancing, ZK/KRaft, ACLs, MirrorMaker,
+Kafka operations (broker upgrades, rebalancing, KRaft (ZooKeeper removed in
+Kafka 4.0 — see ch08 §9.1), ACLs, MirrorMaker,
 schema registry) is a full-time job. **Fix:** managed Kafka (MSK, Confluent
 Cloud, Aiven, Event Hubs) until you have an org-level platform team and an
 on-call rotation that owns it.

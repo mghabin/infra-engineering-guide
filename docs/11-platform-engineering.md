@@ -67,7 +67,7 @@ Platform engineering is net-positive only when it is also net-unblocking.
 
 - **[OPERATING MODEL] [must] Name the product manager (or PM-equivalent), the funding model, and the tenant-onboarding flow before you ship the first capability.**
   - Platform-as-a-product is empty without an explicit operating model. Decide who owns the roadmap (a dedicated PM, a tech lead playing PM, or a rotating product owner from senior engineers); how the team is funded (central engineering budget, internal showback, or chargeback to consumer cost centres); and what a new tenant must do on day one (request namespace/account, register service in catalog, accept SLOs, wire CI).
-  - Sources: Fournier, *Platform Engineering*, Ch. 2–3; Skelton & Pais, *Team Topologies* 2nd ed., Ch. 5; CNCF Platforms WG whitepaper, §"Platform team enablement"; Humanitec, *Reference Architectures for IDPs*, https://humanitec.com/blog/reference-architectures-for-internal-developer-platforms .
+  - Sources: Fournier, *Platform Engineering*, Ch. 2–3; Skelton & Pais, *Team Topologies* 2nd ed., Ch. 5; CNCF Platforms WG whitepaper, §"Platform team enablement"; Humanitec, *Reference Architectures for IDPs*, https://humanitec.com/whitepapers/reference-architecture-for-internal-developer-platforms .
   - Concrete check: a one-page operating-model doc names PM, funding source, onboarding checklist, and the prioritisation forum where consumer requests are triaged. Absence is a finding.
 
 - **[OPERATING MODEL] [should] Prioritise demand with a transparent intake — a public backlog plus a recurring consumer-council — not Slack DMs to the loudest team.**
@@ -147,7 +147,7 @@ Platform engineering is net-positive only when it is also net-unblocking.
 
 - **[ABSTRACTION LEVEL] [must] The right level is *configuration as data* over a small declarative spec — not raw IaC exposed to every team, and not a fully-opinionated PaaS that hides primitives.**
   - Too low (every team writes Terraform from scratch): no leverage, infinite drift, every team re-discovers the same security mistakes. Too high (a black-box PaaS): teams cannot debug, cannot extend, cannot escape; the platform becomes a single point of organisational failure — and (per DORA 2024) the loss of developer independence shows up as degraded delivery stability. The sweet spot is a small declarative schema (a CRD, a Score file, a Crossplane Claim, a catalog entry, an API request body) that the platform compiles into the underlying primitives.
-  - Sources: Kelsey Hightower, *Configuration as Data*, https://github.com/kelseyhightower/config-as-data ; CNCF Platforms WG whitepaper, §"Capabilities"; Salatino, *Platform Engineering on Kubernetes*, Ch. 3–4; DORA 2024 report.
+  - Sources: Kelsey Hightower, *Configuration as Data* (KubeCon NA 2019 keynote), https://www.youtube.com/watch?v=ZrRzVl7-S5s ; CNCF Platforms WG whitepaper, §"Capabilities"; Salatino, *Platform Engineering on Kubernetes*, Ch. 3–4; DORA 2024 report.
   - Concrete check: examine the consumer-facing spec for the platform's main abstraction. Is it < ~30 lines of declarative YAML/JSON for a typical service? Is the compilation to primitives readable? Both yes = good.
 
 ---
@@ -161,7 +161,7 @@ Platform engineering is net-positive only when it is also net-unblocking.
 
 - **[BACKSTAGE] [must] Enable the permission framework before exposing Backstage to production users. The default is open.**
   - The official documentation states it directly: "By default, Backstage endpoints are not protected, and all actions are available to anyone." Backstage's permission framework supports RBAC, ABAC, code-based policies, and external providers, but operators must opt in. A Backstage instance that surfaces production catalog data, scaffolds new repos, or invokes provisioning actions without permissions configured is a self-inflicted privilege-escalation vector.
-  - Sources: Backstage docs — *Permissions overview*, https://backstage.io/docs/permissions/overview/ ; Backstage 1.30+ scaffolder/permissions release notes, https://backstage.io/docs/releases/ .
+  - Sources: Backstage docs — *Permissions overview*, https://backstage.io/docs/permissions/overview/ ; Backstage release-versions, https://backstage.io/docs/overview/release-versions .
   - Concrete check: in the deployed Backstage instance, attempt to invoke a scaffolder template or read a sensitive catalog entity as an unauthenticated user (or as a user with no team membership). If either succeeds, the permission framework is not configured. Cross-link with ch07 mTLS and ch06 supply-chain controls — Backstage scaffolder actions can mint new repos and CI configurations; treat them as privileged.
 
 - **[BACKSTAGE] [avoid] Adopting Backstage when the run-cost dominates the benefit, or treating it as the platform itself rather than a frontend to a platform.**
@@ -347,7 +347,7 @@ This section makes the terms this chapter owns reusable from sibling chapters; s
 - DORA, *2024 Accelerate State of DevOps Report* — https://dora.dev/research/2024/dora-report/
 - DORA metrics guide (current five-metric model) — https://dora.dev/guides/dora-metrics/
 - DORA, *Platform engineering* capability — https://dora.dev/capabilities/platform-engineering/
-- Score workload specification — https://score.dev/docs/
+- Score workload specification — https://docs.score.dev/
 
 ### Vendor / project documentation (canonical statement, not endorsement)
 
@@ -356,8 +356,8 @@ This section makes the terms this chapter owns reusable from sibling chapters; s
 - Backstage Software Templates — https://backstage.io/docs/features/software-templates/
 - Backstage Permissions — https://backstage.io/docs/permissions/overview/
 - Backstage blog (Wrapped 2025; BackstageCon recaps; AI-Native roadmap) — https://backstage.io/blog/
-- Crossplane Compositions — https://docs.crossplane.io/latest/concepts/compositions/
-- Humanitec reference architectures — https://humanitec.com/blog/reference-architectures-for-internal-developer-platforms
+- Crossplane Compositions — https://docs.crossplane.io/latest/concepts/composition/
+- Humanitec reference architectures — https://humanitec.com/whitepapers/reference-architecture-for-internal-developer-platforms
 - Spotify Portal for Backstage (commercial managed Backstage + premium plugins, incl. AiKA) — https://backstage.spotify.com/
 - Roadie (managed Backstage) — https://roadie.io/
 - Argo CD — https://argo-cd.readthedocs.io/
@@ -366,7 +366,7 @@ This section makes the terms this chapter owns reusable from sibling chapters; s
 ### Named industry voices
 
 - Pais & Skelton, Team Topologies key concepts — https://teamtopologies.com/key-concepts/
-- Kelsey Hightower, *Configuration as Data* — https://github.com/kelseyhightower/config-as-data
+- Kelsey Hightower, *Configuration as Data* (KubeCon NA 2019 keynote) — https://www.youtube.com/watch?v=ZrRzVl7-S5s
 - Spotify Engineering, *How We Use Golden Paths to Solve Fragmentation* (origin ~2014 Hack Week; published 2020) — https://engineering.atspotify.com/2020/08/how-we-use-golden-paths-to-solve-fragmentation-in-our-software-ecosystem/
 
 ### Industry analysis

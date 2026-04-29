@@ -61,7 +61,7 @@ PostgreSQL background process that reclaims dead-tuple space and updates planner
 ## B
 
 ### Backstage
-Open-source *developer portal* framework from Spotify. A portal — not a *platform* — that catalogs services (*Software Catalog*), publishes docs (*TechDocs*), and runs scaffolders (*Software Templates*).
+Open-source *developer portal* framework from Spotify. A portal — not a *platform* — that catalogs services (*Software Catalog*), publishes docs (*TechDocs*), and runs scaffolders (*Software Templates*). CNCF **Incubating** since 15 March 2022 (Sandbox Sept 2020); not yet Graduated as of early 2026 — see ch11 §9 (canonical).
 - **Used in**: ch11 §3
 - **Sources**: Backstage docs — https://backstage.io/docs/overview/what-is-backstage ; Spotify Engineering — *Backstage announcement* — https://engineering.atspotify.com/2020/03/16/announcing-backstage/
 
@@ -140,7 +140,7 @@ Progressive rollout that sends a small fraction of traffic to a new version whil
 ### Cardinality
 Number of distinct label/tag combinations a metric can take. High cardinality kills *Prometheus*-class TSDBs; *wide events* address the same need without exploding cardinality.
 - **Used in**: ch05 §3
-- **Sources**: Prometheus docs — *Naming and labels* — https://prometheus.io/docs/practices/naming/ ; Honeycomb — *High cardinality* — https://www.honeycomb.io/blog/observability-cardinality
+- **Sources**: Prometheus docs — *Naming and labels* — https://prometheus.io/docs/practices/naming/ ; Charity Majors, *Metrics: not the observability droids you're looking for* (web.archive.org mirror) — https://web.archive.org/web/2024/https://charity.wtf/2018/02/19/metrics-not-the-observability-droids-youre-looking-for/
 
 ### Cattle vs Pets
 Operations metaphor: pets are individually named and nursed back to health; cattle are interchangeable and replaced on failure. **Disambiguation**: applies to *operational treatment*, not "stateless only" — a sharded database fleet can be cattle.
@@ -160,7 +160,7 @@ AWS framework for synthesizing CloudFormation from imperative code (TypeScript, 
 ### Cell Architecture
 Design that partitions a system into independent, identically-shaped cells so failures and load are bounded to one cell. The base unit of *blast-radius* control at scale.
 - **Used in**: ch04, ch07 §1
-- **Sources**: AWS Builders' Library — *Reducing the Scope of Impact with Cell-based Architecture* — https://aws.amazon.com/builders-library/reducing-the-scope-of-impact-with-cell-based-architecture/
+- **Sources**: AWS Builders' Library — https://aws.amazon.com/builders-library/
 
 ### cert-manager
 Kubernetes controller that issues and renews X.509 certificates from *ACME*, Vault, and private CAs.
@@ -180,7 +180,7 @@ Discipline of running controlled failure experiments in production-like environm
 ### Chargeback
 Billing internal teams for the cloud cost they consumed. Stronger accountability than *showback*; harder to operate because allocation must be auditable.
 - **Used in**: ch10 §3
-- **Sources**: FinOps Framework — *Chargeback & Showback* — https://www.finops.org/framework/capabilities/chargeback-showback/
+- **Sources**: FinOps Framework — *Chargeback & Showback* — https://www.finops.org/framework/capabilities/chargeback/
 
 ### CIDR
 Classless Inter-Domain Routing notation for IP prefixes (e.g., `10.0.0.0/16`). Foundation of all VPC/subnet design.
@@ -235,7 +235,7 @@ Vendor-neutral process that receives, processes, and exports telemetry. Deploy a
 ### Configuration as Data
 Approach to platform UX where workload intent is expressed in a small declarative schema and a controller renders it into runtime resources. *Kelsey Hightower*'s framing.
 - **Used in**: ch11 §3
-- **Sources**: Kelsey Hightower, *Configuration as Data* (KubeCon NA 2019 keynote / GitHub gist) — https://github.com/kelseyhightower/config
+- **Sources**: Kelsey Hightower, *Configuration as Data* (KubeCon NA 2019 keynote) — https://www.youtube.com/watch?v=ZrRzVl7-S5s ; Google Cloud — *Configuration as Data* — https://cloud.google.com/blog/products/containers-kubernetes/cloud-native-config-management-with-kpt
 
 ### Conftest
 CLI that runs *Rego* policies (*OPA*) against arbitrary structured config (Kubernetes YAML, *Terraform* plans, Dockerfiles).
@@ -253,7 +253,7 @@ Older horizontally-scalable Prometheus backend. **Deprecated** in this guide; su
 - **Sources**: Grafana Mimir announcement — https://grafana.com/blog/2022/03/30/announcing-grafana-mimir/
 
 ### cosign
-*Sigstore* CLI for signing and verifying OCI artifacts and *attestations*. Supports keyless signing via *OIDC* and *Fulcio*.
+*Sigstore* CLI for signing and verifying OCI artifacts and *attestations*. Supports keyless signing via *OIDC* and *Fulcio*. Sigstore is CNCF Graduated (Nov 2024) — see ch03 §3.3 (canonical).
 - **Used in**: ch03 §3, ch06 §4
 - **Sources**: cosign docs — https://docs.sigstore.dev/cosign/
 
@@ -329,10 +329,10 @@ Removed shim that let *kubelet* talk to Docker. **Deprecated**: removed in Kuber
 - **Used in**: ch04
 - **Sources**: Kubernetes blog — *Don't Panic: Kubernetes and Docker* — https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/
 
-### DORA Four Keys
-Deployment Frequency, Lead Time for Changes, Change Failure Rate, and Mean Time to Restore — research-validated delivery performance metrics. The 2023 report added a fifth (Reliability).
-- **Used in**: ch03 §1, ch11 §4
-- **Sources**: Forsgren, Humble, Kim, *Accelerate* (2018); Google Cloud DORA — https://dora.dev/
+### DORA-5 (formerly the Four Keys)
+DORA's current model: change lead time, deployment frequency, failed deployment recovery time (replacing MTTR), change fail rate, and deployment rework rate. Evolved from the original four-key model (*Accelerate*, 2018) and confirmed in the 2024 *Accelerate State of DevOps Report*. Canonical metric definitions and count: ch11 §14.
+- **Used in**: ch03 §1, ch11 §14
+- **Sources**: Forsgren, Humble, Kim, *Accelerate* (2018); DORA, *2024 Accelerate State of DevOps Report* — https://dora.dev/research/2024/dora-report/ ; DORA metrics guide — https://dora.dev/guides/dora-metrics/
 
 ### Drift
 Divergence between declared *IaC* desired state and actual cloud state. Closing it requires *reconciliation*; *GitOps* makes the loop continuous.
@@ -454,7 +454,7 @@ CNCF *GitOps* toolkit (Kustomize/Helm controllers, image automation). See also *
 - **Sources**: Flux docs — https://fluxcd.io/flux/
 
 ### FOCUS (FinOps Open Cost & Usage Specification)
-Open spec for normalized cost/usage data across providers. Lets you write one cost model for AWS, Azure, GCP, Oracle, etc.
+Open spec for normalized cost/usage data across providers. Lets you write one cost model for AWS, Azure, GCP, Oracle, etc. Current line is **v1.2** (29 May 2025) — see ch10 §3 (canonical).
 - **Used in**: ch10 §3
 - **Sources**: FOCUS spec — https://focus.finops.org/
 
@@ -464,7 +464,7 @@ Latency, traffic, errors, saturation — Google SRE's recommended starting metri
 - **Sources**: Google SRE Book, ch. *Monitoring Distributed Systems* — https://sre.google/sre-book/monitoring-distributed-systems/
 
 ### Fulcio / Rekor
-*Sigstore* components: Fulcio is the keyless code-signing CA; Rekor is the transparency log.
+*Sigstore* components: Fulcio is the keyless code-signing CA; Rekor is the transparency log. Sigstore is CNCF Graduated (Nov 2024) — see ch03 §3.3 (canonical).
 - **Used in**: ch03 §3
 - **Sources**: Sigstore docs — https://docs.sigstore.dev/
 
@@ -527,12 +527,12 @@ Practice of expressing infrastructure as version-controlled, machine-applied def
 ### IAP (Identity-Aware Proxy)
 Per-request user/device identity check at the proxy boundary; basis of *BeyondCorp*-style access. Cloudflare Access, Google IAP, *Teleport* implement variants.
 - **Used in**: ch06 §5
-- **Sources**: Google IAP docs — https://cloud.google.com/iap/docs/concepts-overview ; Rory Ward & Betsy Beyer, *BeyondCorp: A New Approach to Enterprise Security* (;login:, 2014) — https://research.google/pubs/pub43231/
+- **Sources**: Google IAP docs — https://cloud.google.com/iap/docs/concepts-overview ; Rory Ward & Betsy Beyer, *BeyondCorp: A New Approach to Enterprise Security* (;login:, 2014) — https://research.google/pubs/beyondcorp-a-new-approach-to-enterprise-security/
 
 ### IDP (Internal Developer Platform)
 Curated set of self-service tools and golden paths a *platform team* offers to its internal customers. Distinct from *Backstage* (a *developer portal*).
 - **Used in**: ch11 §3
-- **Sources**: PlatformEngineering.org glossary — https://platformengineering.org/blog/what-is-an-internal-developer-platform ; Humanitec, *Platform Engineering: A Guide* — https://humanitec.com/platform-engineering
+- **Sources**: PlatformEngineering.org — *What is platform engineering?* — https://platformengineering.org/what-is-platform-engineering ; Humanitec, *Platform Engineering: A Guide* — https://humanitec.com/platform-engineering
 
 ### Idempotency Key
 Client-supplied unique ID a server uses to dedup retried operations; the foundation of *effectively-once* APIs.
@@ -547,7 +547,7 @@ A change that produces the same result whether applied once or many times. Requi
 ### Immutable Server / Immutable Infrastructure
 Servers never modified after deploy; changes are made by replacement.
 - **Used in**: ch01 §3
-- **Sources**: Martin Fowler — *ImmutableServer* — https://martinfowler.com/bliki/ImmutableServer.html ; Kief Morris, *Immutable Infrastructure* (2013) — https://martinfowler.com/articles/immutable-infrastructure.html
+- **Sources**: Martin Fowler — *ImmutableServer* — https://martinfowler.com/bliki/ImmutableServer.html
 
 ### Ingress (legacy)
 Original Kubernetes north-south HTTP API. Largely superseded by *Gateway API* for new work.
@@ -589,7 +589,7 @@ Random delay added to retries and scheduled jobs to prevent synchronized stamped
 ## K
 
 ### Karpenter
-AWS-originated *Kubernetes* node autoscaler that provisions right-sized nodes from a flexible instance pool, much faster than *Cluster Autoscaler*.
+AWS-originated *Kubernetes* node autoscaler that provisions right-sized nodes from a flexible instance pool, much faster than *Cluster Autoscaler*. Shipped **v1.0** (Aug 2024) with stable `NodePool` / `EC2NodeClass` APIs; v1beta1 is removed in v1.1 — see ch04 §11 (canonical).
 - **Used in**: ch04
 - **Sources**: Karpenter docs — https://karpenter.sh/
 
@@ -670,7 +670,7 @@ Maximum transmission unit on a link. Tunneling protocols (VXLAN, GENEVE, IPsec) 
 ### Multi-Cloud
 Deliberately running production workloads across more than one hyperscaler. **Disambiguation**: most "multi-cloud" orgs are *primary cloud + SaaS in another cloud*. True multi-cloud has a high tax (people, data movement, abstractions); justify it with a concrete requirement (regulatory, M&A, redundancy you've measured the value of).
 - **Used in**: ch07 §1, ch11 §1
-- **Sources**: Gregor Hohpe, *Multi-Cloud is the Worst Practice* — https://architectelevator.com/cloud/multicloud-worst-practice/ ; AWS Well-Architected — *Multi-account strategy* — https://docs.aws.amazon.com/wellarchitected/latest/management-and-governance-guide/multi-account-strategy.html
+- **Sources**: Gregor Hohpe, *Multi-Cloud is the Worst Practice* — https://architectelevator.com/cloud/multicloud-worst-practice ; AWS Well-Architected — *Organizing your AWS environment using multiple accounts* — https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html
 
 ### Multi-Window Multi-Burn-Rate Alerting
 SLO alerting strategy that fires on combinations of fast-burn (short window, high rate) and slow-burn (long window, low rate) to balance precision and detection time.
@@ -727,7 +727,7 @@ Trusting an external *OIDC* provider (GitHub Actions, GitLab, *Kubernetes* SA to
 - **Sources**: GitHub OIDC — https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect ; AWS — *OIDC Federation* — https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
 
 ### OpenCost / Kubecost
-CNCF spec and product for *Kubernetes* cost allocation. *OpenCost* is the open-source standard; Kubecost is its commercial origin.
+CNCF spec and product for *Kubernetes* cost allocation. *OpenCost* is the open-source standard (CNCF **Incubating**, since Oct 2024); Kubecost is its commercial origin — see ch10 §3 (canonical).
 - **Used in**: ch10 §3
 - **Sources**: OpenCost — https://www.opencost.io/
 
@@ -865,7 +865,7 @@ Role-based access control: Roles/ClusterRoles + RoleBindings/ClusterRoleBindings
 ### RED Method
 Rate, Errors, Duration — Tom Wilkie's request-oriented service metrics. Pair with *USE* for resources.
 - **Used in**: ch05 §3
-- **Sources**: Tom Wilkie, *The RED Method* — https://www.weave.works/blog/the-red-method-key-metrics-for-microservices-architecture/
+- **Sources**: Tom Wilkie, *The RED Method: key metrics for microservices architecture* (Grafana mirror) — https://grafana.com/blog/2018/08/02/the-red-method-key-metrics-for-microservices-architecture/
 
 ### Reconciliation Loop / Control Loop
 Continuous "observe → diff → act" loop that drives actual state to declared state. Foundation of *Kubernetes*, *GitOps*, and modern *IaC*.
@@ -942,7 +942,7 @@ Moving validation (security, testing, schema review) earlier in the SDLC. **Disa
 ### Showback
 Reporting cloud cost back to the business unit that incurred it without billing them. Step before *chargeback*.
 - **Used in**: ch10 §3
-- **Sources**: FinOps Framework — *Chargeback & Showback* — https://www.finops.org/framework/capabilities/chargeback-showback/
+- **Sources**: FinOps Framework — *Chargeback & Showback* — https://www.finops.org/framework/capabilities/chargeback/
 
 ### SLI (Service Level Indicator)
 A *good-events / valid-events* ratio measuring something a user actually cares about (e.g., 200-OK rate, p99 latency under N ms).
@@ -997,7 +997,7 @@ Deployable unit of *IaC* (CloudFormation stack, Terraform root module, Pulumi st
 ### State (Terraform/OpenTofu) / State Locking / Remote State
 Source-of-truth file mapping config to real resources; must be in remote backend with locking. **Deprecated**: standalone DynamoDB locking — Terraform AWS S3 backend now supports native S3 locking (Terraform 1.10+ / OpenTofu 1.10+).
 - **Used in**: ch02 §2
-- **Sources**: Terraform docs — *State* — https://developer.hashicorp.com/terraform/language/state ; HashiCorp blog — *S3 Native State Locking* (2024) — https://www.hashicorp.com/blog/terraform-aws-s3-backend-adds-support-for-native-state-locking
+- **Sources**: Terraform docs — *State* — https://developer.hashicorp.com/terraform/language/state ; HashiCorp blog — *S3 Native State Locking* (2024) — https://www.hashicorp.com/en/blog/terraform-aws-s3-backend-adds-support-for-native-state-locking
 
 ### StatefulSet
 Kubernetes workload type that gives pods stable identity, ordered deployment, and stable storage via *CSI*.

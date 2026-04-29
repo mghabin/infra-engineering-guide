@@ -176,7 +176,7 @@ most expensive FinOps mistake.
 - **Prefer** Kubernetes-native rightsizing: **VPA** in *recommendation*
   mode (not auto-apply) feeding requests, plus a node autoscaler with
   consolidation. Compute-scaler choice (Cluster Autoscaler, **Karpenter**,
-  GKE NAP/Autopilot, AKS NAP) is owned by ch04 §5; ch10 only asserts the
+  GKE NAP/Autopilot, AKS NAP) is owned by ch04 §11; ch10 only asserts the
   **cost property** — pick a scaler that does live consolidation and
   supports diversified spot pools, otherwise §7's economics are out of
   reach. For non-K8s workloads, scale-to-zero (FaaS, Cloud Run, ACA,
@@ -239,7 +239,7 @@ most expensive FinOps mistake.
 
 - **Do** apply the **dual-pool pattern** for production Kubernetes: an
   on-demand floor (e.g., 30% of capacity, system pods, stateful sets)
-  plus a spot bulk pool for stateless workloads (ch04 §5 owns scaler
+  plus a spot bulk pool for stateless workloads (ch04 §11 owns scaler
   choice).
 - **Don't** put databases, primary brokers, or anything with local
   state on spot — drain window is not enough for a multi-hour replica

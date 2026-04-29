@@ -8,7 +8,7 @@ The single most expensive lesson in this domain: **the only durability metric th
 
 ## 1. Managed vs self-hosted
 
-**Default to managed.** In 2026, for Postgres, MySQL, Redis/Valkey, Kafka, object storage, and search, the managed offering from your primary cloud (or a reputable specialist: Aiven, Confluent Cloud, MongoDB Atlas, Neon, PlanetScale, Crunchy Bridge, Timescale Cloud) is the right starting point for ≥95% of teams. The operational surface — patching, minor-version upgrades, backup orchestration, failover, TLS rotation, OS-level CVEs — is a *full-time team* you do not have (AWS RDS "Shared responsibility model"; Google Cloud SQL "Overview of high availability"; Campbell & Majors, *Database Reliability Engineering*, ch. 1).
+**Default to managed.** In 2026, for Postgres, MySQL, Redis/Valkey, Kafka, object storage, and search, the managed offering from your primary cloud (or a reputable specialist: Aiven, Confluent Cloud, MongoDB Atlas, Neon, PlanetScale, Crunchy Bridge, Timescale Cloud) is the right starting point **unless one of the disqualifying conditions below applies**. The operational surface — patching, minor-version upgrades, backup orchestration, failover, TLS rotation, OS-level CVEs — is a *full-time team* you do not have (AWS RDS "Shared responsibility model"; Google Cloud SQL "Overview of high availability"; Campbell & Majors, *Database Reliability Engineering*, ch. 1).
 
 **Self-host (or move to a non-hyperscaler vendor) only when one of these documented exceptions applies** — phrase the ADR as a checkbox against this list, not "we want control":
 

@@ -75,7 +75,7 @@ merged commit; prod requires a different human to approve the apply than
 approved the PR.
 - **When to use:** any IaC repo with more than one contributor.
 - **Pitfalls:** auto-apply on merge for prod; pasting un-redacted plan output into public PR comments (plans contain secrets).
-- **See:** ch. 2; <https://www.runatlantis.io/docs/>, <https://docs.env0.com/docs/plan-and-apply>.
+- **See:** ch. 2; <https://www.runatlantis.io/docs/>, <https://docs.env0.com/>.
 
 ### Policy-as-code gate
 
@@ -352,7 +352,9 @@ Transit Gateway / Virtual WAN / Network Connectivity Center.
 
 A written, central IP plan: /16 per VPC, /24 subnets, RFC 6598
 (`100.64.0.0/10`) reserved for Kubernetes pod CIDRs and overlay networks.
-Renumbering is a career event — plan once.
+Do **not** use RFC 6598 space for any range that may be peered to an ISP,
+partner, mobile-carrier or future-acquisition network — see ch07 §2 for the
+collision surface. Renumbering is a career event — plan once.
 - **When to use:** before the first VPC.
 - **Pitfalls:** packing subnets to /27 to "save space" (RFC 1918 has 17M addresses, scarcity is imaginary); using `10.0.0.0/16` as your default (it collides with everything).
 - **See:** ch. 7; <https://datatracker.ietf.org/doc/html/rfc1918>, <https://datatracker.ietf.org/doc/html/rfc6598>.
@@ -373,7 +375,7 @@ NAT-only is dev-grade — it gives you "any TCP/443 to anywhere" which is
 not policy.
 - **When to use:** every production VPC.
 - **Pitfalls:** allow-list maintained by ticket; bypass routes for "the one team that needs it".
-- **See:** ch. 7; <https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/network-security>.
+- **See:** ch. 7; <https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/secure/network-security-strategy>.
 
 ---
 
@@ -524,7 +526,7 @@ flexible Compute Savings Plans / flexible CUDs over family-locked RIs
 unless the family is genuinely fixed.
 - **When to use:** once you have ≥6 months of usage data.
 - **Pitfalls:** 100% coverage (you pay for idle when you scale down); 3-year RI on a workload you'll rewrite in 12 months.
-- **See:** ch. 10; <https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html>, <https://www.vantage.sh/blog/reserved-instance-ladder-strategy>.
+- **See:** ch. 10; <https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html>, <https://www.vantage.sh/blog>.
 
 ### Unit cost as the headline metric
 
@@ -576,7 +578,7 @@ Crossplane claim, a workload CRD), and a platform controller reconciles
 it. "Raise a ticket" is not self-service.
 - **When to use:** any platform capability requested more than ~once a month.
 - **Pitfalls:** self-service that still requires a human approval step for the common case; bespoke abstractions that re-invent Kubernetes APIs badly.
-- **See:** ch. 11; <https://score.dev/docs/>, <https://docs.crossplane.io/latest/concepts/compositions/>.
+- **See:** ch. 11; <https://docs.score.dev/>, <https://docs.crossplane.io/latest/concepts/composition/>.
 
 ### Team Topologies + Inverse Conway Maneuver
 
@@ -592,11 +594,11 @@ to win either way.
 ### Measure platforms by consumers' DORA, not platform output
 
 A platform is successful when its consuming stream-aligned teams have
-better DORA metrics — the four delivery keys (deploy frequency, lead time,
-change-failure rate, failed-deployment recovery time) plus the reliability
-metric — and high adoption of platform features, *not* when the platform
-team has shipped many features or closed many tickets. Canonical metric
-definitions and count: ch11 §14.
+better DORA metrics — the five DORA software-delivery metrics (change
+lead time, deployment frequency, failed deployment recovery time, change
+fail rate, deployment rework rate) — and high adoption of platform
+features, *not* when the platform team has shipped many features or
+closed many tickets. Canonical metric definitions and count: ch11 §14.
 - **When to use:** every platform-team OKR cycle.
 - **Pitfalls:** dashboards of platform-team velocity; adoption rates that aren't tied to a consumer outcome.
 - **See:** ch. 3, ch. 11; <https://dora.dev/>, <https://itrevolution.com/product/accelerate/>.

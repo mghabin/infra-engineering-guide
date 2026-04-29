@@ -124,10 +124,11 @@ the false-positive rate from a long-window-only alert. Implement in Prometheus w
 
 Stop hand-writing the six PromQL expressions per SLO. Mature toolchain: **OpenSLO v1**
 (Apache-2.0 spec; `Service`/`SLO`/`SLI`/`AlertPolicy` kinds) as vendor-neutral source of
-truth; **Sloth** and **Pyrra** (both CNCF) consume an SLO spec and emit MWMBR Prometheus
-rules per Workbook ch.5; **Nobl9**, **Datadog SLOs**, **Grafana Cloud SLO**, **Honeycomb
-SLOs** for managed equivalents. Pick one per org, generate the §2.1 table from it, and
-treat the spec as code (PR review, CI lint, owner-team annotation).
+truth — **OpenSLO is the spec, not the runtime**; **Sloth** and **Pyrra** (both CNCF) are
+the runtime, consuming an SLO spec and emitting MWMBR Prometheus rules per Workbook ch.5;
+**Nobl9**, **Datadog SLOs**, **Grafana Cloud SLO**, **Honeycomb SLOs** for managed
+equivalents. Pick one per org, generate the §2.1 table from it, and treat the spec as
+code (PR review, CI lint, owner-team annotation).
 
 ### 2.3 Alert-fatigue controls
 

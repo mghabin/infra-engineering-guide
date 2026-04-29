@@ -60,13 +60,12 @@ CNCF Graduated) watches a Git repo of manifests and reconciles continuously.
 Drift is detected and either auto-healed or surfaced; cluster credentials never
 leave the cluster; `git log` is the audit log.
 
-- **should:** for any Kubernetes environment with more than one delivery team,
-  more than a handful of services, or regulated audit requirements, application
-  deploys are pull-based via Argo CD or Flux. (Sources: Argo CD / Flux docs;
-  CNCF GitOps WG *OpenGitOps Principles v1.0*; ThoughtWorks Tech Radar — GitOps
-  in *Adopt* since 2022.)
-- **prefer:** GitOps once any ch01 §5 adoption trigger holds (>1 env, >1
-  cluster, >1 team sharing a cluster, or audit-required regime).
+- **should:** for any Kubernetes environment that meets **any** ch01 §5
+  trigger (>1 env, >1 cluster, >1 team sharing a cluster, or
+  audit-required regime), application deploys are pull-based via Argo CD
+  or Flux. (Sources: Argo CD / Flux docs; CNCF GitOps WG *OpenGitOps
+  Principles v1.0*; ThoughtWorks Tech Radar — GitOps in *Adopt* since
+  2022.)
 - **must:** if you push-deploy to Kubernetes, the CI principal is short-lived
   (OIDC), namespace-scoped, never cluster-admin. No long-lived kubeconfig in
   repo secrets. The env repo references images by **digest** (`@sha256:…`), not
@@ -80,10 +79,14 @@ leave the cluster; `git log` is the audit log.
 
 ---
 
-## 3. Supply chain: SLSA, SBOM, signing — the new minimum bar
+## 3. Supply chain: SLSA, SBOM, signing — high-maturity baseline for production critical-path workloads
 
 Defensive baseline post-xz (CVE-2024-3094, Mar 2024): **SLSA + SBOM +
-signing**, all three.
+signing**, all three. Treat the full triple as the high-maturity target for
+production critical-path workloads (anything internet-facing, anything with
+a regulatory floor, anything whose compromise reaches paying customers); for
+internal-only / pre-revenue / experimental workloads, SBOM + signing is a
+defensible interim while you stand up SLSA provenance.
 
 ### 3.1 SLSA (Supply-chain Levels for Software Artifacts)
 
@@ -140,7 +143,8 @@ for security tooling (VEX, CBOM, CDXA), emit SPDX alongside for compliance.
 ### 3.3 Signing: cosign keyless and KMS as peers
 
 Two signing models are first-class. **Sigstore keyless** (Fulcio + Rekor +
-cosign; CNCF **Incubating** since Oct 2022, public-good services GA Oct 2022)
+cosign; CNCF **Graduated** Nov 2024, Incubating from Sept 2022; public-good
+services GA Oct 2022)
 issues short-lived certs bound to an OIDC identity and records every signature
 in a public transparency log — best fit for OSS, public-internet SaaS, most
 enterprise greenfield. **KMS/HSM-backed signing** (cosign with AWS KMS, Azure
