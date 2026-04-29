@@ -14,7 +14,10 @@ is covered in depth in chapter 04.
 ## 1. The 2026 landscape
 
 - **Terraform (HashiCorp, BUSL 1.1 since Aug 2023)** — largest ecosystem and
-  registry. IBM-owned since Feb 2025. Non-OSI; TF Cloud / TFE is the upsell.
+  registry. IBM-owned since 27 Feb 2025 (IBM Newsroom, *IBM Completes
+  Acquisition of HashiCorp*,
+  https://newsroom.ibm.com/2025-02-27-ibm-completes-acquisition-of-hashicorp,-creates-comprehensive,-end-to-end-hybrid-cloud-platform).
+  Non-OSI; TF Cloud / TFE is the upsell.
 - **OpenTofu (Linux Foundation, MPL-2.0)** — fork of Terraform 1.5.7 (Sept
   2023). Drop-in CLI, same HCL, same provider protocol. Ships features
   Terraform doesn't have: client-side state encryption, early-eval in
@@ -26,8 +29,12 @@ is covered in depth in chapter 04.
 - **Bicep** — Microsoft DSL over ARM. Azure-only; right Azure default. ARM is
   legacy. Raw CloudFormation only for things CDK can't reach.
 - **Crossplane** — Kubernetes control plane that reconciles cloud resources
-  via CRDs. Composition Functions (GA v1.17, 2024) made compositions writable
-  in real languages. Pick when Kubernetes *is* your platform API.
+  via CRDs. **v2 GA in 2025** re-architected the project: XRs and MRs are
+  namespaced by default, claims are removed, Compositions can wrap *any*
+  Kubernetes resource (Deployments, third-party CRDs, Cluster API objects),
+  Composition Functions remain the writable layer (Go / Python / KCL). v1
+  cluster-scoped XRs survive as `LegacyCluster` for back-compat. Pick when
+  Kubernetes *is* your platform API.
 - **Ansible** — *configuration management*, not IaC. Procedural, push-based,
   mutable-target. Use for OS-level config of long-lived VMs and network gear.
   **Chef / Puppet** in decline (ThoughtWorks Radar: Hold).
@@ -99,6 +106,12 @@ module that takes 47 variables and conditionally creates everything.
 
 **Avoid — inline `provider` blocks in shared modules.** Modules declare `required_providers` with version constraints; the root passes configured providers in.
 
+**Prefer — provider-defined functions over hand-rolled `regex` / `split` / `format` for parsing provider-shaped strings** (ARNs, resource IDs, KRM names). Available since Terraform 1.8 / OpenTofu 1.7 (e.g. `provider::aws::arn_parse(arn)`); covered by the provider lockfile, so they version with the provider, not the module.
+- Sources: HashiCorp, *Functions — provider-defined functions*, https://developer.hashicorp.com/terraform/language/functions ; Terraform 1.10 release notes (cross-references provider functions added in 1.8), https://github.com/hashicorp/terraform/releases/tag/v1.10.0 .
+
+**Should — on Azure, prefer Azure Verified Modules (`br/public:avm/res/...`) over hand-rolled Bicep wrappers for any resource AVM covers.** AVM is Microsoft's official cross-language (Bicep + Terraform) module standard, with WAF guidance baked into the module specs; for Terraform-on-Azure, prefer the AVM Terraform variants over the older `Azure/*` registry modules. This is the Azure analogue of the "registry over in-repo monorepo" rule above. Local Bicep wrapping of AVM resource modules into pattern modules is the right composition path.
+- Source: Microsoft, *Azure Verified Modules*, https://azure.github.io/Azure-Verified-Modules/ .
+
 ---
 
 ## 4. State management
@@ -107,17 +120,20 @@ State is the most dangerous artifact in your IaC system: plaintext secrets,
 the source of truth the tool trusts over reality, multi-hour incident when
 corrupted.
 
-**Must — remote state with native locking, always.** Use the backend's native lock: S3 with `use_lockfile = true` (Terraform 1.10 / OpenTofu 1.10 added native S3 conditional-write locks; **DynamoDB is now legacy / migration-only**), GCS native lock, Azure Blob lease, the TFC/TFE backend, or OpenTofu's HTTP backend with a lock server. Local state in CI guarantees overwrite races.
-- Sources: HashiCorp, *S3 Backend — `use_lockfile`*, https://developer.hashicorp.com/terraform/language/backend/s3#state-locking ; OpenTofu, *S3 backend*, https://opentofu.org/docs/language/settings/backends/s3/ .
+**Must — remote state with native locking, always.** Use the backend's native lock: S3 with `use_lockfile = true` (Terraform 1.10 / OpenTofu 1.10 added native S3 conditional-write locks; **DynamoDB-based locking is deprecated** — both upstreams say the arguments will be removed in a future minor release, but it still works today, so migrate during a normal cut-over rather than treating inherited stacks as broken. Both `use_lockfile = true` and `dynamodb_table` can be set during the migration window; 1.10+ acquires from both), GCS native lock, Azure Blob lease, the TFC/TFE backend, or OpenTofu's HTTP backend with a lock server. Local state in CI guarantees overwrite races.
+- Sources: HashiCorp, *S3 Backend — State Locking*, https://developer.hashicorp.com/terraform/language/backend/s3#state-locking ; OpenTofu, *S3 backend*, https://opentofu.org/docs/language/settings/backends/s3/ ; Terraform 1.10.0 release notes, https://github.com/hashicorp/terraform/releases/tag/v1.10.0 .
 
 **Must — encrypt state at rest and treat it as a secret.** Server-side bucket/blob encryption (SSE-KMS on S3, CMK on Azure Blob, CMEK on GCS) is necessary, not sufficient — also restrict bucket access to the apply role, enable object versioning, enable access logging.
 - Sources: AWS, *SSE-KMS for S3*, https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html ; HashiCorp, *Sensitive data in state*, https://developer.hashicorp.com/terraform/language/state/sensitive-data .
 
-**Should — turn on OpenTofu's client-side state encryption when state holds real secrets.** Server-side / KMS-envelope encryption protects against a stolen disk or unauthenticated access; it does **not** protect against a credential allowed to read the object (`s3:GetObject`, `Storage Blob Data Reader`) — KMS will decrypt for that caller. OpenTofu's state encryption (1.7+) wraps the state body with a passphrase or KMS key *before* upload, so a stolen object-read credential yields ciphertext. Terraform OSS has no equivalent native client-side state encryption; the Terraform-side answer is "use TFC/TFE, restrict the apply role, accept the residual risk."
-- Sources: OpenTofu, *State encryption*, https://opentofu.org/docs/language/state/encryption/ ; HashiCorp, *Sensitive data in state* (above) — acknowledges OSS state is stored unencrypted client-side.
+**Should — turn on OpenTofu's client-side state encryption when state holds real secrets.** Server-side / KMS-envelope encryption protects against a stolen disk or unauthenticated access; it does **not** protect against a credential allowed to read the object (`s3:GetObject`, `Storage Blob Data Reader`) — KMS will decrypt for that caller. OpenTofu's state encryption (1.7+) wraps the state body with a passphrase or KMS key *before* upload, so a stolen object-read credential yields ciphertext. **Pulumi** achieves equivalent protection per-value via its configurable secrets-provider model (`passphrase` default, `awskms`, `azurekeyvault`, `gcpkms`, `hashivault`) — sensitive inputs/outputs are encrypted client-side in the stack file while non-secret state remains plaintext (more granular than OpenTofu's whole-state envelope, but doesn't hide non-secret metadata). Terraform OSS has no equivalent native client-side state encryption; the Terraform-side answer is "use TFC/TFE, restrict the apply role, accept the residual risk." CDK and Bicep have no client-side equivalent — rely on KMS-on-the-bucket plus IAM scoping.
+- Sources: OpenTofu, *State encryption*, https://opentofu.org/docs/language/state/encryption/ ; Pulumi, *Secrets and configurable secrets providers*, https://www.pulumi.com/docs/iac/concepts/secrets/ ; HashiCorp, *Sensitive data in state* (above) — acknowledges OSS state is stored unencrypted client-side.
 
 **Must — one state file per blast radius.** Monolithic "all of prod" state means a bad refactor can plan to destroy your VPC. Split by environment, then by lifecycle (network, data, compute, edge). Cross-state references go through `terraform_remote_state` — or better, via SSM/Parameter Store/Key Vault where the producer publishes outputs and consumers read by name.
 - Sources: HashiCorp, *Remote state*, https://developer.hashicorp.com/terraform/language/state/remote ; Brikman, *Terraform: Up & Running* (3rd ed.), chs. 3 & 5.
+
+**Prefer — declare cross-state dependencies explicitly once you have more than ~10 states per environment.** Terraform Stacks `component`/`deployment` graph (HCP/TFE), Terragrunt `dependency` blocks, or a hand-rolled topology diagram backed by `terraform_remote_state` — pick one and keep it reviewable. Use OpenTofu 1.10's `-target-file` / `-exclude-file` for surgical replans during incident response, **not** as a routine workflow; targeted plans hide drift in the unselected resources.
+- Sources: HashiCorp, *Terraform Stacks*, https://developer.hashicorp.com/terraform/language/stacks ; OpenTofu 1.10.0 release notes, https://github.com/opentofu/opentofu/releases/tag/v1.10.0 .
 
 **Prefer — declarative `import` blocks (Terraform 1.5+/OpenTofu 1.6+) over `terraform import` CLI or hand-edited state.** Reviewable in a PR, removable after the next apply. `state rm`/`state mv` are incident escape hatches.
 
@@ -155,7 +171,8 @@ modules/
   vpc/  rds/  ecs-service/  ...
 ```
 
-Each leaf is a root module with its own backend, state, provider config, and `*.tfvars`. Terragrunt is the mainstream way to keep this DRY without re-introducing workspace-style implicit state; OpenTofu's `early-eval` of variables in `backend` blocks (1.8+) reduces the need.
+Each leaf is a root module with its own backend, state, provider config, and `*.tfvars`. Terragrunt is the mainstream way to keep this DRY without re-introducing workspace-style implicit state; OpenTofu's `early-eval` of variables in `backend` blocks (1.8+) reduces the need. **On HCP Terraform / TFE, Terraform Stacks (GA 2025)** is HashiCorp's first-party alternative — `*.tfstack.hcl` describes components and deployments and one apply orchestrates many state files behind a declarative dependency graph. Stacks is closed-source and HCP/TFE-only; OpenTofu has explicitly said it will not implement Stacks-the-syntax and is iterating on early-eval + state primitives instead. For OSS users, stay with Terragrunt or pure early-eval.
+- Source: HashiCorp, *Terraform Stacks*, https://developer.hashicorp.com/terraform/language/stacks .
 
 **Workspaces are still useful for** ephemeral per-PR or per-feature stacks of the *same* environment (preview environments). That's their original intent.
 
@@ -179,7 +196,8 @@ Drift is reality diverging from desired state — someone clicked in the
 console, an autoscaler edited a tag, another tool wrote a resource you also
 manage.
 
-**Should — run `tofu plan` on a schedule against every prod state and alert on non-empty diffs.** Daily is the floor; every few hours for high-blast-radius environments. Mechanism doesn't need to be fancy: a GitHub Actions cron, a Spacelift/Atlantis/env0/TFC drift task, or a self-hosted runner posting to Slack. The managed options' value-add is UI and routing.
+**Should — run `tofu plan` on a schedule against every prod state and alert on non-empty diffs.** Daily is the floor; every few hours for high-blast-radius environments. Mechanism doesn't need to be fancy: a GitHub Actions cron, a self-hosted runner posting to Slack, or the named feature on a TACOS — **HCP Terraform Health → Drift Detection** (formerly continuous validation), **Spacelift Drift Detection**, **env0 Drift Detection**, or **Scalr** drift per environment. For Bicep-only stacks, schedule `az deployment group what-if --no-pretty-print` against the last applied template. For raw CloudFormation, `DetectStackDrift` + an EventBridge rule is the native path. AWS Config / Azure Resource Graph / GCP Asset Inventory complement these by catching out-of-band changes the IaC tool can't see.
+- Sources: HashiCorp, *HCP Terraform health checks / drift detection*, https://developer.hashicorp.com/terraform/cloud-docs/workspaces/health ; Spacelift, *Drift detection*, https://docs.spacelift.io/concepts/stack/drift-detection .
 
 **Prefer — fail loudly, then triage.** A drift diff is either an emergency change to reconcile into code, another tool fighting you for ownership, or a provider bug. None are "ignore." Persistent accepted drift (e.g. autoscaler-managed desired-capacity) belongs in `lifecycle { ignore_changes = [...] }` with a comment.
 
@@ -198,9 +216,19 @@ Three layers, in cost order: (1) **Static** — `validate`, `fmt -check`, `tflin
 
 **Should — codify org-specific policy as OPA/Rego or Sentinel and gate apply on it.** "No untagged resources," "no instance type bigger than `xlarge` without a label," "S3 buckets must have lifecycle rules." Conftest + Rego is the open option; Sentinel is the TFC/TFE option. Either way, policy lives in version control and is reviewable.
 
-**Prefer — `terraform test` / `tofu test` for module contract tests, Terratest only for cross-resource end-to-end paths in a real cloud.** The native framework covers ~80% of what teams used Terratest for, without the Go toolchain.
+**Prefer — `tofu test` (1.8+) / `terraform test` (1.7+) with `mock_provider` and `override_resource` / `override_data` / `override_module` for module contract tests; Terratest only for the few cross-resource end-to-end paths where you want a real cloud round-trip.** Mocks let the native framework run in `command = apply` mode without cloud credentials — that was the main reason teams stayed on Terratest, and it's gone.
+- Sources: Terraform 1.7.0 release notes (`mock_provider`, `override_*`), https://github.com/hashicorp/terraform/releases/tag/v1.7.0 ; OpenTofu 1.8.0 release notes (provider mocking, resource overrides), https://github.com/opentofu/opentofu/releases/tag/v1.8.0 .
 
 **Avoid — testing your provider.** "I created an `aws_s3_bucket`, let me assert that an `aws_s3_bucket` exists" proves nothing. Test your *composition*: that your service module wires alarms to the right SNS topic, that private subnets actually have no IGW route.
+
+### 7a. AI-assisted authoring
+
+Copilot, Cursor, Pulumi Copilot, and AVM's Spec Kit are now default-on for IaC. The failure modes are concrete: hallucinated provider attribute names that pass `validate` but fail `plan`; out-of-date syntax (e.g. `aws_s3_bucket_acl` semantics the model learned before the split); silent regression of `for_each` to `count`; silent removal of `lifecycle { ignore_changes }` or `moved {}` blocks during a "refactor."
+
+- **Must — every AI-authored change goes through the same gates as a human PR**: `validate` + `fmt -check` + `tflint` / `bicep lint`, `tofu test` with mocks, the source/plan-level policy scan from §7, the apply gate from §10. No "trusted-author" fast path for an LLM.
+- **Should — pin the LLM's context to the actual provider lockfile** (the `.terraform.lock.hcl` provider versions, the AVM module version, the Pulumi provider pin). The model's training cutoff is not a substitute for `provider docs @ v5.62`.
+- **Avoid — accepting LLM diffs that change `for_each` to `count`, drop `lifecycle { ignore_changes = [...]}`, remove `moved {}` blocks, or rewrite `import {}` blocks** without an explicit reviewer note explaining why. These are the silent-destroy class of changes.
+- Source: Microsoft, *Azure Verified Modules — AI-Assisted IaC Solution Development*, https://azure.github.io/Azure-Verified-Modules/experimental/ai-assisted-sol-dev/ .
 
 ---
 
@@ -214,9 +242,12 @@ The unbreakable rules. Every one has caused a public incident.
 **Must — no plaintext secrets in `terraform plan` output committed to a PR or posted to a CI log.** Plan output prints variable values; CI logs are read by more people than your state bucket. Mark variables `sensitive = true` (Terraform/OpenTofu) or `@secure()` (Bicep) and ensure CI redacts.
 - Sources: HashiCorp, *Sensitive input variables*, https://developer.hashicorp.com/terraform/language/values/variables#suppressing-values-in-cli-output ; Microsoft, *Bicep secure parameters*, https://learn.microsoft.com/azure/azure-resource-manager/bicep/parameters#secure-parameters .
 
-**Must — assume state contains secrets.** Generated RDS passwords, random tokens, anything from `random_password`, anything fetched from a data source that returns a secret. State permissions and encryption are part of your secret-handling story, not separate.
+**Must — assume legacy state contains secrets.** Generated RDS passwords, random tokens, anything from `random_password`, anything fetched from a data source that returns a secret — if it was authored before Terraform 1.10, it is in state. State permissions and encryption are part of your secret-handling story, not separate. New code can do strictly better; see the next rule.
 
-**Should — fetch secrets at apply time via data sources from a secret manager** (Vault, AWS Secrets Manager, Azure Key Vault, GCP Secret Manager). The value still ends up in state, but the source of truth is the secret manager and rotation works.
+**Prefer — ephemeral resources and write-only arguments (Terraform 1.10+ / equivalent OpenTofu) for credentials a provider only needs at apply time.** `password_wo` + `password_wo_version` on `aws_db_instance`, `secret_string_wo` on `aws_secretsmanager_secret_version`, `ephemeral` blocks for short-lived inputs and outputs. The value is consumed by the provider during apply and **never written to state or to the saved plan file** — strictly stronger than `sensitive = true`, which only suppresses CLI output. Combine with `ephemeralasnull` for safe pass-through to non-ephemeral consumers.
+- Sources: Terraform 1.10.0 release notes (ephemeral resources, ephemeral values, `ephemeralasnull`), https://github.com/hashicorp/terraform/releases/tag/v1.10.0 ; HashiCorp, *Ephemeral resources and write-only arguments*, https://developer.hashicorp.com/terraform/language/resources/ephemeral .
+
+**Should — fetch secrets at apply time via data sources from a secret manager** (Vault, AWS Secrets Manager, Azure Key Vault, GCP Secret Manager). For older providers without write-only support, the value still lands in state, but the source of truth is the secret manager and rotation works. Migrate to the `*_wo` form whenever the provider gains it.
 
 **Avoid — `TF_VAR_db_password` env vars in CI without a backing secret store.** One careless `printenv` or `set -x` from a leak. Pull from the secret manager inside the job, not staged in the runner's environment.
 
@@ -248,6 +279,8 @@ A pinned version is half the story. The other half is *which copy* of that provi
   - Sources: HashiCorp, *Provider Requirements*, https://developer.hashicorp.com/terraform/language/providers/requirements ; OpenTofu, *Provider Requirements*, https://opentofu.org/docs/language/providers/requirements/ .
 - **Should — run a provider mirror or private registry** for any team that builds on a release schedule. Terraform and OpenTofu both support filesystem and network mirrors via CLI configuration (`provider_installation { network_mirror { url = "https://…" } }`); Artifactory, Nexus, and the cloud-vendor artifact stores all front the registry protocol. The mirror gives you an audit trail of which provider binaries shipped, decouples CI from upstream registry availability, and is the precondition for air-gapped builds.
   - Sources: HashiCorp, *CLI Configuration — provider installation*, https://developer.hashicorp.com/terraform/cli/config/config-file#provider-installation ; OpenTofu, *Provider installation*, https://opentofu.org/docs/cli/config/config-file/#provider-installation .
+- **Prefer — for OpenTofu shops, an OCI registry as the mirror.** OpenTofu 1.10 (2025) shipped first-class OCI support for **both** providers and modules: `oci_mirror { repository_template = "…" include = ["registry.opentofu.org/*/*"] }` in CLI config, and `module "vpc" { source = "oci://example.com/modules/vpc/aws" }` in HCL. Any standard OCI registry works — ACR, ECR, GHCR, Harbor, Zot, Artifactory's OCI front-end — which collapses IaC and container supply-chain tooling onto one signing/scanning pipeline (cosign, Sigstore attestations, OCI policy). Terraform OSS still requires the legacy provider-mirror protocol; this is one of the larger CLI feature deltas as of 2025.
+  - Source: OpenTofu 1.10.0 release notes (OCI Registry Support), https://github.com/opentofu/opentofu/releases/tag/v1.10.0 .
 - **Should — turn on plugin caching in CI** (`plugin_cache_dir`) so every job doesn't re-download every provider; combined with the lock file's `h1:`/`zh:` checksums, a cache hit is also a provenance check.
 - **Should — verify provider signatures where the registry publishes them** and fail `init` on checksum mismatch; never auto-update the lock from CI.
 - **Avoid — `terraform init -upgrade` in a job that also runs `apply`.** The upgrade rewrites the lock; the apply runs against the new providers; the diff is invisible to review. Split the steps.
@@ -287,7 +320,7 @@ Full Kubernetes coverage is chapter 04; the IaC slice:
 
 **Avoid — `helm template | kubectl apply` for your own charts long-term.** You lose Helm's release tracking and gain none of Kustomize's clarity.
 
-**Prefer — Crossplane when the cloud control plane *is* your platform API.** "App team submits a `PostgresInstance` CR, gets an RDS instance" is the sweet spot. Composition Functions (GA v1.17) made it operationally tractable.
+**Prefer — Crossplane when the cloud control plane *is* your platform API.** "App team submits a namespaced `PostgresInstance` XR in their team namespace, gets an RDS instance" is the sweet spot. Crossplane v2 (GA 2025) made XRs and MRs namespaced by default and dropped claims; new platforms should start there, and v1 cluster-scoped XRs survive only as `LegacyCluster` for migration. Composition Functions (Go / Python / KCL) remain the writable layer.
 
 **Avoid — Crossplane as a Terraform replacement for shops that don't already run Kubernetes as a platform.** You're trading one state-and-reconciliation system for two (etcd + provider caches). Operational cost is real.
 
@@ -302,6 +335,15 @@ The decision lives between "one repo for everything IaC" and "one repo per team 
 - **Should — keep application code out of both.** App repos consume infra outputs (via SSM/Key Vault/remote state); they don't live alongside `*.tf`. Mixing them couples release cadence and dilutes ownership.
 - **Avoid — one repo per stack ("infra-vpc-prod", "infra-eks-prod", …).** The "atomic refactor across N stacks" cost compounds. Directory boundaries inside a single repo give you the same blast-radius split without the cross-repo PR dance.
 
+### 13a. Multi-engine estates
+
+Real platform orgs run several IaC engines simultaneously — Bicep for Azure landing zones (AVM is Bicep-first), OpenTofu for AWS, CDK for serverless apps, Crossplane v2 for namespaced app-team self-service. The "one tool per state file" rule from §2 is right at the *state* level; the *org* level needs its own discipline.
+
+- **Should — one engine owns each resource class.** Record ownership in a `ManagedBy=<engine>:<repo>:<state>` tag on cloud resources (or a label on K8s-shaped resources). Reviewers can answer "who owns this SG?" without grepping every repo.
+- **Should — use the cloud-native inventory as the cross-engine source of truth** — AWS Config, Azure Resource Graph, GCP Asset Inventory. No single engine's state can see what a different engine is managing; the inventory can. Reconcile inventory against the union of engine states on a schedule and alert on resources with no `ManagedBy` tag or with two.
+  - Sources: AWS, *AWS Config*, https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html ; Microsoft, *Azure Resource Graph*, https://learn.microsoft.com/azure/governance/resource-graph/overview .
+- **Avoid — two engines managing the same resource, even transiently.** Second-writer-wins; the loser silently drifts and the §6 schedule will eventually catch it, but only after damage.
+
 ---
 
 ## 14. Anti-patterns checklist
@@ -312,7 +354,7 @@ Reject in review unless an exception is on file: `provider` blocks inside reusab
 
 ## 15. Recommended starting stack (2026)
 
-For a new platform team with no existing IaC: **OpenTofu 1.8+** (with `tfenv`/`mise` pinning); **monorepo** with `live/<env>/<region>/<stack>/` plus `modules/`, splitting to a separate `infra-modules` repo once a module is consumed by ≥3 teams; **state on S3 with native `use_lockfile`** (or GCS / Azure Blob equivalent) with object versioning, KMS-CMK server-side encryption *and* OpenTofu client-side state encryption on top; **CI** through Atlantis (self-hosted) or Spacelift / env0 / TFC (managed) with redacted PR plan summary (full plan in access-controlled CI artifact store), two-person prod apply, OPA Conftest gate, Checkov + tflint source scan every PR and plan-level scan on prod-bound stacks; **provider mirror** (Artifactory or cloud-native) with `plugin_cache_dir` in CI; **Infracost** on PRs above $50/mo delta; **scheduled `tofu plan`** every 6h per prod stack with non-empty alerting; **ephemeral PR stacks** in a separate sandbox account with 72h TTL, owner + PR + ExpiresAt tags, per-stack budget alerts; **secrets** in Vault or the cloud-native secret manager, never in repo or staged in CI envs; **testing** via `tofu validate` + `tflint` + `checkov` per PR, `tofu test` module contracts in CI, Terratest only for the few cross-resource end-to-end paths that matter.
+For a new platform team with no existing IaC: **OpenTofu 1.10+** (with `tfenv`/`mise` pinning); **monorepo** with `live/<env>/<region>/<stack>/` plus `modules/`, splitting to a separate `infra-modules` repo once a module is consumed by ≥3 teams; **state on S3 with native `use_lockfile`** (or GCS / Azure Blob equivalent) with object versioning, KMS-CMK server-side encryption *and* OpenTofu client-side state encryption on top; **CI** through Atlantis (self-hosted) or Spacelift / env0 / TFC (managed) with redacted PR plan summary (full plan in access-controlled CI artifact store), two-person prod apply, OPA Conftest gate, Checkov + tflint source scan every PR and plan-level scan on prod-bound stacks; **provider mirror** via OCI registry (ACR / ECR / GHCR / Harbor) with `oci_mirror` for providers and `oci://` module sources, plus `plugin_cache_dir` in CI; **Infracost** on PRs above $50/mo delta; **scheduled `tofu plan`** every 6h per prod stack with non-empty alerting; **ephemeral PR stacks** in a separate sandbox account with 72h TTL, owner + PR + ExpiresAt tags, per-stack budget alerts; **secrets** via ephemeral resources / `*_wo` write-only arguments where the provider supports them, otherwise pulled from Vault or the cloud-native secret manager — never in repo or staged in CI envs; **testing** via `tofu validate` + `tflint` + `checkov` per PR, `tofu test` with `mock_provider` for module contracts in CI, Terratest only for the few cross-resource end-to-end paths that matter. **Alternative for HCP/TFE shops:** swap Terragrunt-style DRY for **Terraform Stacks** as the multi-state orchestrator.
 
 Boring on purpose. Boring infrastructure tooling is the goal.
 
@@ -322,11 +364,16 @@ Boring on purpose. Boring infrastructure tooling is the goal.
 
 Primary canon for this chapter:
 
-- HashiCorp Terraform docs — *State*, *S3 Backend (`use_lockfile`)*, *Remote state*, *Sensitive data in state*, *Sensitive input variables*, *Dependency lock file*, *Provider Requirements*, *Version constraints — best practices*, *Module providers*, *CLI configuration / provider installation*, *Saved plans (`-out`)*, *Manipulating state*, *`terraform validate`*, *TFC ephemeral workspaces / auto-destroy*. (developer.hashicorp.com)
+- HashiCorp Terraform docs — *State*, *S3 Backend (`use_lockfile`)*, *Remote state*, *Sensitive data in state*, *Sensitive input variables*, *Ephemeral resources and write-only arguments*, *Dependency lock file*, *Provider Requirements*, *Version constraints — best practices*, *Module providers*, *Functions (provider-defined)*, *Terraform Stacks*, *CLI configuration / provider installation*, *Saved plans (`-out`)*, *Manipulating state*, *`terraform validate`*, *HCP Terraform health checks / drift detection*, *TFC ephemeral workspaces / auto-destroy*. (developer.hashicorp.com)
+- Terraform release notes — 1.7.0 (`mock_provider`, `override_*`), 1.10.0 (ephemeral resources, native S3 locking, DynamoDB deprecation). (github.com/hashicorp/terraform)
 - OpenTofu docs — *Migrating from Terraform*, *S3 backend*, *State encryption*, *Dependency lock file*, *Provider Requirements*, *Provider installation / mirrors*, *Backend configuration / migration*. (opentofu.org)
-- AWS — *S3 SSE-KMS*, *Tagging best practices for cost allocation*, *AWS CDK Developer Guide* (`work-with`, `context`). (docs.aws.amazon.com)
-- Microsoft — *Bicep secure parameters*, *Cloud Adoption Framework — Resource tagging*. (learn.microsoft.com)
-- Pulumi — *Provider versioning*. (pulumi.com)
+- OpenTofu release notes — 1.8.0 (provider mocking), 1.10.0 (OCI registry, native S3 locking, `-target-file`/`-exclude-file`). (github.com/opentofu/opentofu)
+- AWS — *S3 SSE-KMS*, *Tagging best practices for cost allocation*, *AWS CDK Developer Guide* (`work-with`, `context`), *AWS Config*. (docs.aws.amazon.com)
+- Microsoft — *Bicep secure parameters*, *Cloud Adoption Framework — Resource tagging*, *Azure Verified Modules*, *AVM AI-Assisted IaC Solution Development*, *Azure Resource Graph*. (learn.microsoft.com / azure.github.io)
+- Pulumi — *Provider versioning*, *Secrets and configurable secrets providers*. (pulumi.com)
+- Crossplane — *What's new in Crossplane v2*, GitHub releases. (docs.crossplane.io / github.com/crossplane/crossplane)
+- Spacelift — *Drift detection*. (docs.spacelift.io)
+- IBM Newsroom — *IBM Completes Acquisition of HashiCorp* (27 Feb 2025). (newsroom.ibm.com)
 - OWASP — *Secrets Management Cheat Sheet*. (cheatsheetseries.owasp.org)
 - tflint project README. (github.com/terraform-linters/tflint)
 - Yevgeniy (Jim) Brikman, *Terraform: Up & Running* (3rd ed., O'Reilly, 2022) — chs. 1, 3, 5.
