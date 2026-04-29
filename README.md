@@ -4,23 +4,58 @@
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/mghabin/infra-engineering-guide/badge)](https://securityscorecards.dev/viewer/?uri=github.com/mghabin/infra-engineering-guide)
 [![CI](https://github.com/mghabin/infra-engineering-guide/actions/workflows/ci.yml/badge.svg)](https://github.com/mghabin/infra-engineering-guide/actions/workflows/ci.yml)
 
-An opinionated, cloud-agnostic reference for engineering modern
-infrastructure: Infrastructure-as-Code, CI/CD, container platforms,
-observability, security & supply chain, networking, data, reliability,
-FinOps, and platform engineering. Compiled from primary sources (CNCF,
-Google SRE Book, the cloud Well-Architected frameworks, ThoughtWorks
-Tech Radar) and named industry voices. Every page ends with a Sources
-section so you can follow the citations.
+An opinionated reference for engineering modern infrastructure:
+Infrastructure-as-Code, CI/CD, container platforms, observability,
+security & supply chain, networking, data, reliability, FinOps,
+platform engineering, and workforce identity. Compiled from primary
+sources (CNCF, Google SRE Book, the cloud Well-Architected frameworks,
+NIST, FinOps Foundation, ThoughtWorks Tech Radar) and named industry
+voices. Every page ends with a Sources section so you can follow the
+citations.
 
-Concepts are universal across clouds. Where a vendor-specific
-illustration helps, we pick one — but the *recommendation* is the
-pattern, not the product.
+Concepts apply across hyperscalers; the *defaults* assume managed
+cloud-native primitives, OpenTelemetry, and an SLO-driven operating
+model. See [`SCOPE.md`](./SCOPE.md) before adopting recommendations
+into a non-cloud-native estate.
 
-## Reading order
+## Who this guide is for
 
-If you're new to the field or to a cloud-native stack, follow the
-numbered order under [`docs/`](./docs). Otherwise jump to the page you
-need.
+Mid-sized cloud SaaS / product organisations with multiple
+stream-aligned teams, Git-based delivery, a paid on-call rotation, and
+an existing or emerging platform / SRE function. If that's you, the
+defaults will work; if it isn't, individual chapters are still useful
+as background reading but the *defaults* may be wrong for you.
+
+- [`SCOPE.md`](./SCOPE.md) — who this guide is for, who it isn't, what
+  organisational and technical envelope the defaults assume, and the
+  glossary of disclaimers used in chapters.
+- [`coverage-map.md`](./coverage-map.md) — what each chapter owns,
+  what it defers to another chapter, and what is intentionally
+  excluded from the whole guide.
+
+## Read these first (the first 90 days)
+
+If you only have an hour with the guide, start here. These two pages
+are the synthesis; the numbered chapters are doctrine you go to *when
+the decision tree points you there*.
+
+- [`docs/decision-trees.md`](./docs/decision-trees.md) — the 12
+  highest-leverage decisions and one-screen decision trees for the
+  questions teams actually argue about (which IaC tool, adopt
+  Kubernetes, service mesh y/n, multi-region, multi-cloud, ship a
+  change safely, SLO model, cost guardrails, data-store family,
+  tenancy, human IdP). Each node cites the chapter where the rationale
+  lives.
+- [`checklist.md`](./checklist.md) — one-page do/don't card for design
+  review. Every line is a `must`-severity rule. Print it, paste it
+  into your PR template, or use it as the cliff-notes for the rest of
+  this guide.
+
+## Doctrine — the 12 chapters
+
+Read in depth when the decision tree or checklist points you here. If
+you're new to the field or to a cloud-native stack, the numbered order
+also works as a linear read.
 
 | # | Page | What's in it |
 |---|------|--------------|
@@ -51,19 +86,8 @@ infrastructure ages well**, not about a single subsystem:
   source list shared across the chapters above (primary specs, books,
   team blogs, industry voices, conference talks).
 
-## The card
+## Glossary
 
-- [`checklist.md`](./checklist.md) — one-page do/don't list for design
-  review. Print it, paste it into your PR template, or use it as the
-  cliff-notes for the rest of this guide.
-
-## Cross-cutting
-
-- [`docs/decision-trees.md`](./docs/decision-trees.md) — the
-  highest-leverage decisions and one-screen decision trees for the
-  questions teams actually argue about (which IaC tool, adopt
-  Kubernetes, service mesh y/n, multi-region, SLO model, cost
-  guardrails). Cross-references the chapters.
 - [`glossary.md`](./glossary.md) — canonical, opinionated definitions
   for every term used normatively in this guide. Where the industry
   uses a term inconsistently, the glossary picks a side and cites a
@@ -100,7 +124,8 @@ Among other things, that sample demonstrates:
 
 Issues and PRs that improve clarity, fix factual errors, or add
 citations are very welcome. PRs that broaden scope toward "everything
-about DevOps" are usually not — see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+about DevOps" are usually not — see [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+and [`SCOPE.md`](./SCOPE.md).
 
 ## License
 
