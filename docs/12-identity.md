@@ -105,6 +105,15 @@ running on whatever the SaaS sign-up wizard defaulted to.
 
 ## 4. FEDERATION & SSO
 
+Throughout this chapter, **tier-0 / production-critical** refers to any
+system whose compromise or outage materially harms the business — the
+IdP itself, cloud-account roots, source-code hosting, the CI/CD control
+plane, the production deploy pipeline, customer-data stores, the
+secrets manager, and any SaaS named in a regulator-facing risk
+register. Treat the list as explicit (named in the IdP catalogue with a
+"tier-0" tag), not implicit. Tier-1 is "hurts but recoverable in a
+quarter"; tier-2 is everything else.
+
 - **[FED] [must] Every SaaS in scope authenticates via SAML 2.0 or OIDC against the corporate IdP; local credentials are disabled where the vendor permits and isolated where they don't.**
   The point of an IdP is that disabling an account in one place
   disables it everywhere. A SaaS that keeps a parallel local

@@ -1,5 +1,7 @@
 # Infrastructure Engineering PR Checklist
 
+This file summarises and routes; canonical wording lives in `docs/<NN>-*.md`. Where this file and a chapter disagree, the chapter wins.
+
 One page. Pull this up during infra/platform reviews. Every item is a `must`-severity rule from the guide — copy/paste lines into PRs, tick what holds, link the chapter for depth.
 
 ## 1. Foundations
@@ -100,7 +102,6 @@ One page. Pull this up during infra/platform reviews. Every item is a `must`-sev
 - [ ] Pin verification policies to the *signer identity*, not just "has a signature". → [ch. 06](docs/06-security-supply-chain.md)
 - [ ] Adopt BeyondCorp posture: workloads on private subnets, no public IPs by default, identity at the application layer. → [ch. 06](docs/06-security-supply-chain.md)
 - [ ] Apply default-deny NetworkPolicy in every app namespace per ch04 §8 (canonical rule). → [ch. 06](docs/06-security-supply-chain.md), [ch. 04 §8](docs/04-containers-k8s.md)
-- [ ] Require hardware-backed WebAuthn for all human production access; no SMS/TOTP-only paths. → [ch. 06](docs/06-security-supply-chain.md)
 - [ ] Publish a dashboarded patch SLA by severity and exposure. → [ch. 06](docs/06-security-supply-chain.md)
 - [ ] Enable CloudTrail / Activity Log / Cloud Audit Logs in every region/subscription/project, centralised to a write-once store. → [ch. 06](docs/06-security-supply-chain.md)
 - [ ] Run a runtime threat-detection agent (Falco / Tetragon) on every prod node with tuned, routed rules. → [ch. 06](docs/06-security-supply-chain.md)
@@ -208,9 +209,7 @@ One page. Pull this up during infra/platform reviews. Every item is a `must`-sev
 - [ ] Use the Inverse Conway Maneuver: shape the org so the desired architecture is the easy one to build. → [ch. 11](docs/11-platform-engineering.md)
 - [ ] Move shared ops concerns to X-as-a-Service so stream-aligned teams' intrinsic cognitive load fits human limits. → [ch. 11](docs/11-platform-engineering.md)
 - [ ] Measure platform success by consumer-team DORA metrics and platform-feature adoption rate; not tickets closed. → [ch. 11](docs/11-platform-engineering.md)
-- [ ] Build/adopt an IDP only at one of three concrete triggers: ≥30 services in production, ≥4 stream-aligned teams sharing infra, or ≥6 months of repeatedly-cited friction; below all three, ship paved-road shell scripts + README templates + a shared module repo. → [ch. 11 §5](docs/11-platform-engineering.md)
-- [ ] Adopt Backstage only when all three of (catalog ≥30 owned entities, TechDocs, Scaffolder) are needed; otherwise a `services.yaml` + docs site + `cookiecutter`/`copier` is cheaper. → [ch. 11 §9](docs/11-platform-engineering.md)
-- [ ] Charter a platform team only when all four criteria hold: ≥4 stream-aligned teams suffer the same shared-infra pain, demonstrated demand with a recurring funded backlog (≥1 quarter visible), sustained funding (≥2 engineers + PM-equivalent for ≥1 year), and complexity worth amortising; otherwise embed platform engineers part-time. → [ch. 11 §16](docs/11-platform-engineering.md)
+- [ ] Apply the four-row platform readiness matrix in [`docs/11-platform-engineering.md` § Platform readiness matrix (heuristic)](docs/11-platform-engineering.md#platform-readiness-matrix-heuristic) before standing up an IDP, Backstage, or a chartered platform team — embed before IDP, IDP before Backstage, Backstage before chartering. → [ch. 11 §16](docs/11-platform-engineering.md)
 - [ ] Treat documentation as a first-class platform feature: colocated with code, searchable, versioned. ADRs capture *why*, not just *what*. → [ch. 11](docs/11-platform-engineering.md)
 
 ## 12. Identity (workforce)
