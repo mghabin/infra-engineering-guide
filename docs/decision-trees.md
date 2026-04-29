@@ -13,46 +13,52 @@ Ranked by cost-of-reversal, not novelty. If you get any of these wrong, you
 will pay for it for years; if you get the bottom of the list wrong, you pay
 for it for a quarter.
 
-- **1. Account / subscription / project topology and region set.**
-  Defines blast radius, IAM boundary, billing boundary, and data-residency
-  posture. Renaming is a migration, not an edit. — `ch01 §6`, `ch07 §1`,
+- **1. Account / subscription / project topology, region set, and
+  tagging/cost-allocation taxonomy.**
+  Defines blast radius, IAM boundary, billing boundary, data-residency
+  posture, *and* the only retroactive lever you have on cost. Renaming is a
+  migration, not an edit; retro-tagging six months of resources is the
+  FinOps equivalent of renumbering a VPC. — `ch01 §6`, `ch07 §1`,
   `ch10 §11`.
 - **2. IP address plan (global CIDR + per-VPC /16s).**
   Overlapping CIDRs cannot be peered, VPN'd, or transit-gateway'd; the only
   fix is renumbering production. — `ch07 §2`.
-- **3. Identity model (workload identity + human SSO).**
+- **3. Workload identity model (no static credentials).**
   "No static credentials" is the foundation everything else assumes; if you
   ship long-lived keys, every later control is a workaround. — `ch06 §3`,
   `ch03 §4.2`.
-- **4. IaC tool per repo + state model.**
+- **4. Human identity model (corporate IdP, federation, joiner/mover/leaver).**
+  Picks the SSO graph every SaaS, console, and pipeline binds to. Migrating
+  IdPs is a multi-quarter project that touches every vendor contract. —
+  tree §12, `ch12 §1–3`, `ch06 §3`.
+- **5. IaC tool per repo + state model.**
   One tool per state file. Mixing CDK and raw CFN, or Terraform and
   OpenTofu, against the same state produces undiffable drift. — `ch02 §2`,
   `ch02 §4`.
-- **5. Deployment unit + registry + signing model.**
+- **6. Deployment unit + registry + signing model.**
   OCI image is the universal unit; the registry/signing/digest-pin chain is
   the supply-chain backbone. Changing it later means re-signing history. —
   `ch03 §3`, `ch04 §3`, `ch06 §10–11`.
-- **6. Secrets store and rotation policy.**
+- **7. Secrets store and rotation policy.**
   Choosing the wrong store (or none) leaks into every pipeline, manifest,
   and runbook. — `ch02 §8`, `ch06 §2`.
-- **7. Observability backbone (OTel + collector + storage tier).**
+- **8. Observability backbone (OTel + collector + storage tier).**
   Instrumentation lives in every service forever. SDK/protocol churn is the
   most expensive refactor in the guide. — `ch05 §2–3`, `ch05 §7`.
-- **8. SLO + error-budget policy (signed, not aspirational).**
+- **9. SLO + error-budget policy (signed, not aspirational).**
   Without it, "reliability vs velocity" is decided by whoever shouts
   loudest, per incident. — `ch09 §1`.
-- **9. Data tier: managed vs self-hosted, RPO/RTO tier.**
-  Stateful choices outlive three generations of compute. — `ch08 §1`,
-  `ch08 §4`.
-- **10. Kubernetes yes/no, and if yes — managed vs self-hosted.**
+- **10. Data-store family choice + RPO/RTO tier.**
+  Stateful choices outlive three generations of compute. The *family*
+  (relational, document, KV, wide-column, columnar warehouse, stream) is
+  even harder to reverse than managed-vs-self-hosted within a family. —
+  tree §10, `ch08 §1`, `ch08 §4`, `ch08 §5`.
+- **11. Kubernetes yes/no, and if yes — managed vs self-hosted.**
   Wrong "yes" buys a permanent platform-tax; wrong self-host buys a
   permanent on-call tax. — `ch04 §1`, `ch04 §14`.
-- **11. CI/CD topology: push vs pull, monorepo vs polyrepo, runner trust.**
+- **12. CI/CD topology: push vs pull, monorepo vs polyrepo, runner trust.**
   Defines who can deploy what, and the trust boundary of every action. —
   `ch03 §1–2`, `ch03 §6`, `ch03 §9`.
-- **12. Tagging / labelling / cost-allocation taxonomy.**
-  Retro-tagging six months of resources is the FinOps equivalent of
-  renumbering a VPC. — `ch10 §11`.
 
 Everything else in the guide is recoverable in a quarter. These twelve are
 not.
@@ -358,7 +364,157 @@ Two rules `ch10` is loud about:
 
 ---
 
-## 10. Common scenarios → chapter map
+## 10. Decision: data-store family
+
+The first-order data choice is **family**, not vendor. Picking SQL when
+the access pattern is per-key throughput, or picking a document store when
+the workload is ad-hoc joins, is a rewrite — managed-vs-self-hosted
+within a family is comparatively cheap. Default to PostgreSQL until a
+hard reason pushes you off it (`ch08 §1`, `ch08 §5`).
+
+```mermaid
+flowchart TD
+    A[New service needs persistence] --> B{Access pattern<br/>dominated by ad-hoc<br/>relational queries / joins<br/>+ strong consistency?}
+    B -->|Yes| C{Scale shape?}
+    B -->|No| D{Schema-loose,<br/>hierarchical / nested,<br/>read-heavy by primary key?}
+
+    C -->|Single-region,<br/>< ~10 TB hot| C1[PostgreSQL — managed<br/>RDS / Cloud SQL / AlloyDB — ch08 §5.3]
+    C -->|Multi-region writes,<br/>5-nines, global| C2[Distributed SQL<br/>Spanner / CockroachDB / YugabyteDB<br/>— ch08 §5.1]
+    C -->|Serverless, spiky,<br/>per-request billing fits| C3[Aurora DSQL<br/>narrow fit — ch08 §5.2]
+
+    D -->|Yes, document-shaped| E{Throughput per-key<br/>the bottleneck?}
+    D -->|No| F{Workload analytic:<br/>scan-heavy, columnar,<br/>aggregations over billions of rows?}
+
+    E -->|No, moderate scale| E1[Document store<br/>MongoDB / Cosmos DB / Firestore — ch08 §1]
+    E -->|Yes, single-digit-ms at any QPS,<br/>known key access| E2{Row-level or<br/>wide / sparse columns?}
+
+    E2 -->|Row-level KV| E3[DynamoDB / Cloud Bigtable<br/>single-table design — ch08 §1, §6]
+    E2 -->|Wide-column, time-series,<br/>tens of TB+ per table| E4[Bigtable / Cassandra / ScyllaDB<br/>— ch08 §1, §6]
+
+    F -->|Yes| G{Operating model?}
+    F -->|No| H{Source-of-truth is a<br/>stream other systems<br/>materialise from?}
+
+    G -->|Cloud-native warehouse,<br/>SQL-first BI| G1[BigQuery / Snowflake / Redshift — ch08 §1]
+    G -->|Open table format,<br/>lakehouse, ML + SQL| G2[Databricks / Iceberg + Trino<br/>on object storage — ch08 §1, §13]
+    G -->|Real-time analytics,<br/>sub-second over fresh events| G3[ClickHouse / Pinot / Druid — ch08 §1]
+
+    H -->|Yes| H1[Kafka / Kinesis / Pulsar as SoT<br/>materialise into views above<br/>— ch08 §9, §11, §12]
+    H -->|No| H2{Graph traversals<br/>≥3 hops are the query?}
+    H2 -->|Yes| H3[Graph DB<br/>Neptune / Neo4j / TigerGraph — ch08 §1]
+    H2 -->|No| H4[Re-examine: probably PostgreSQL — ch08 §1]
+```
+
+Anti-choices to flag in review:
+
+- **"Mongo because schema-less is easier."** It is easier on day one and
+  harder on year two when you need joins, transactions, or an analyst.
+  Default PostgreSQL with `jsonb` columns first (`ch08 §1`, `ch08 §10`).
+- **"DynamoDB because it scales."** It scales for the access patterns you
+  designed the keys for. New access pattern = new table or GSI, often a
+  rewrite (`ch08 §1`, `ch08 §6`).
+- **"Kafka as a database."** Kafka is a log; "stream as source of truth"
+  means downstream stores materialise the projections you query
+  (`ch08 §9`, `ch08 §12`). Querying Kafka directly is not the pattern.
+- **"Warehouse for the OLTP path."** Columnar engines optimise scan, not
+  point lookup; per-row latency and concurrency will disappoint
+  (`ch08 §1`).
+
+Whatever family you pick, the RPO/RTO tier (`ch08 §4`) and HA topology
+(`ch08 §5`) decisions still apply on top — they are orthogonal.
+
+---
+
+## 11. Decision: tenancy model
+
+Every B2B service answers this on day one whether it knows it or not.
+Reversing it later means a per-customer migration. The default is
+**pool with row-level isolation**; you bridge or silo only when a tenant
+crosses a band (`ch08 §7`, `ch10 §11`).
+
+```mermaid
+flowchart TD
+    A[New multi-tenant service] --> B{Regulatory or contractual<br/>isolation requirement?<br/>HIPAA dedicated, FedRAMP High,<br/>"our data, our DB" clause}
+    B -->|Yes, for all tenants| S[Silo: DB-per-tenant<br/>or account-per-tenant — ch08 §7, ch01 §6]
+    B -->|Yes, for a named subset| BR[Bridge: pool default<br/>+ silo for the named tenants — ch08 §7]
+    B -->|No| C{Noisy-neighbour<br/>blast radius tolerance?}
+
+    C -->|Low: a hot tenant<br/>must not page the rest| D{Per-tenant restore<br/>semantics required?<br/>"restore tenant X to yesterday<br/>without touching others"}
+    C -->|High: shared-fate acceptable| E{Cost ceiling?}
+
+    D -->|Yes| S
+    D -->|No| BR
+
+    E -->|Tight: per-tenant overhead<br/>must round to zero| P[Pool: shared schema,<br/>tenant_id everywhere,<br/>RLS enforced in DB — ch08 §7, ch06 §3]
+    E -->|Loose: enterprise-priced<br/>tenants can fund their own slice| BR
+
+    P --> P1[Belt-and-braces:<br/>RLS + tenant_id in every index<br/>+ connection-level GUC — ch08 §7]
+    BR --> BR1[Promotion path:<br/>tenant exceeds band<br/>→ migrate to silo lane — ch08 §15]
+    S --> S1[Cost & ops tax:<br/>N control planes, N backups,<br/>N upgrade windows — ch08 §17, ch10 §11]
+```
+
+Three traps `ch08` and `ch10` agree on:
+
+- **"Silo by default" for a self-serve B2B SaaS.** You are buying N×
+  backup, upgrade, and patch overhead before any customer asks for it.
+  Pool first, promote on demand (`ch08 §7`, `ch10 §11`).
+- **Pool without RLS, "the app will filter".** One missing `WHERE
+  tenant_id = ?` is a cross-tenant data breach. Push isolation into the
+  database (`ch08 §7`, `ch06 §3`).
+- **Bridge without a written promotion runbook.** Bridge mode is only
+  cheaper than silo if the migration from pool to silo lane is a paved
+  path, not a heroic project (`ch08 §15`).
+
+---
+
+## 12. Decision: human identity model
+
+How humans authenticate to the corp surface (consoles, SaaS, repos,
+pipelines) is decided once and then bound to every vendor contract.
+Migrating IdPs after the fact is a multi-quarter project that touches
+joiner/mover/leaver, SCIM, conditional access, and audit (`ch12 §1`,
+`ch12 §3`).
+
+```mermaid
+flowchart TD
+    A[New corp identity surface] --> B{Org shape?}
+    B -->|Single org,<br/>one HR system,<br/>one payroll| C{Workforce composition?}
+    B -->|M&A holding /<br/>federation of orgs<br/>with separate HR| F[Federated multi-IdP<br/>hub IdP + downstream trusts<br/>SCIM out of the hub — ch12 §2]
+    B -->|Independent product BUs<br/>customer identity ≠ workforce| G{Customer identity<br/>or workforce identity?}
+
+    C -->|Mostly employees,<br/>uniform device posture| D{Vendor SaaS coverage:<br/>do critical SaaS support<br/>SAML/OIDC + SCIM<br/>from your candidate IdP?}
+    C -->|Heavy contractor /<br/>partner population| E[Single corp IdP for employees<br/>+ B2B / guest tenant<br/>for contractors — ch12 §2, §4]
+
+    D -->|Yes, ≥95%| D1{Conditional access<br/>requirements?<br/>device posture, risk-based,<br/>per-app step-up}
+    D -->|No, long tail of<br/>SAML-but-no-SCIM SaaS| D2[Single corp IdP<br/>+ IGA / SCIM bridge<br/>Okta Lifecycle, Entra Governance — ch12 §3]
+
+    D1 -->|Yes| D3[Single corp IdP with CA engine<br/>Entra ID CA / Okta Adaptive — ch12 §3]
+    D1 -->|No, MFA + SSO is enough| D4[Single corp IdP, baseline MFA — ch12 §1]
+
+    G -->|Workforce| F
+    G -->|Customer-facing app login| H[CIAM separate from workforce<br/>Auth0 / Cognito / Entra External ID<br/>— ch12 §5]
+
+    F --> F1[Anti-pattern guard:<br/>no IdP-per-product for workforce<br/>that is shadow IT — ch12 §2]
+    H --> H1[Never reuse workforce IdP<br/>for end-customer logins<br/>blast radius and licensing — ch12 §5]
+```
+
+Three rules `ch12` is loud about:
+
+- **One workforce IdP, even across M&A.** Federate, don't fragment.
+  IdP-per-BU for workforce is shadow IT with a logo (`ch12 §2`).
+- **SCIM coverage is a procurement gate.** SAML without SCIM means
+  joiner/mover/leaver is a ticket queue, and leavers keep access
+  (`ch12 §3`).
+- **Workforce IdP ≠ customer IdP.** Putting end users in your corp
+  directory inverts blast radius and breaks licensing assumptions
+  (`ch12 §5`). Run CIAM as a separate tenant.
+
+Cross-ref: workload identity (tree §1 item 3, `ch06 §3`) is a different
+problem with a different answer — do not let one vendor sell you both as
+"identity".
+
+---
+
+## 13. Common scenarios → chapter map
 
 Read in the listed order. Stop when the immediate problem is solved.
 
@@ -375,7 +531,9 @@ Read in the listed order. Stop when the immediate problem is solved.
 | First on-call rotation | `ch09 §1` (SLO) → `ch09 §2` (multi-window burn-rate) → `ch09 §3` (incident response roles) → `ch09 §5` (runbooks as code) → `ch09 §6` (rotation models, page budget) → `ch09 §4` (blameless postmortem) |
 | Cost is suddenly out of control | `ch10 §3` (visibility before optimisation) → `ch10 §12` (anomaly detection) → `ch10 §8` (egress audit) → `ch10 §5,6,7` (rightsize, scale-to-zero, spot) → `ch10 §4` (budgets + burn-rate) → `ch10 §13` (commitments only after baseline is clear) |
 | Supply-chain incident in the news | `ch06 §18` (lessons) → `ch06 §6` (package ingestion controls) → `ch03 §4.1,4.5` (pinned actions, xz lesson) → `ch06 §7,9,10,11` (SBOM, SLSA, sign, verify) → `ch06 §17` (shift left *and* everywhere) |
-| Data tier choice (new service) | `ch08 §1` (managed vs self-hosted) → `ch08 §4` (RPO/RTO tier) → `ch08 §5` (HA topology) → `ch08 §10,15` (schema evolution + migration as deploy) → `ch08 §2,3` (backups, restore drills) → `ch08 §16` (encryption) |
+| Data tier choice (new service) | tree §10 (family first) → `ch08 §1` (managed vs self-hosted) → `ch08 §4` (RPO/RTO tier) → `ch08 §5` (HA topology) → `ch08 §10,15` (schema evolution + migration as deploy) → `ch08 §2,3` (backups, restore drills) → `ch08 §16` (encryption) |
+| New multi-tenant B2B service | tree §11 (tenancy model) → `ch08 §7` (blast radius) → `ch06 §3` (workload identity per tenant) → `ch10 §11` (per-tenant cost allocation) → `ch08 §15` (promotion migrations) → `ch09 §1.2` (per-tenant SLOs vs global) |
+| Standing up corp identity / IdP migration | tree §12 (model) → `ch12 §1–3` (IdP, federation, IGA/SCIM) → `ch06 §3` (workload identity is separate) → `ch12 §5` (CIAM split) → `ch01 §6` (account topology bound to IdP groups) |
 
 ---
 
