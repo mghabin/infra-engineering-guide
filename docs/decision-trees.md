@@ -480,7 +480,7 @@ flowchart TD
     D -->|Yes| S
     D -->|No| BR
 
-    E -->|Tight: per-tenant overhead<br/>must round to zero| P[Pool: shared schema,<br/>tenant_id everywhere,<br/>RLS enforced in DB — ch08 §7, ch06 §3]
+    E -->|Tight: per-tenant overhead<br/>must round to zero| P[Pool: shared schema,<br/>tenant_id everywhere,<br/>RLS enforced in DB — ch08 §7, ch04 §13, ch07 §6]
     E -->|Loose: enterprise-priced<br/>tenants can fund their own slice| BR
 
     P --> P1[Belt-and-braces:<br/>RLS + tenant_id in every index<br/>+ connection-level GUC — ch08 §7]
@@ -495,7 +495,9 @@ Three traps `ch08` and `ch10` agree on:
   Pool first, promote on demand (`ch08 §7`, `ch10 §11`).
 - **Pool without RLS, "the app will filter".** One missing `WHERE
   tenant_id = ?` is a cross-tenant data breach. Push isolation into the
-  database (`ch08 §7`, `ch06 §3`).
+  database (`ch08 §7`). Workload-to-workload auth between tenant
+  services (only when services genuinely cross trust boundaries) lives
+  in `ch06 §3`; do not conflate it with pool isolation.
 - **Bridge without a written promotion runbook.** Bridge mode is only
   cheaper than silo if the migration from pool to silo lane is a paved
   path, not a heroic project (`ch08 §15`).
@@ -521,7 +523,7 @@ flowchart TD
     C -->|Heavy contractor /<br/>partner population| E[Single corp IdP for employees<br/>+ B2B / guest tenant<br/>for contractors — ch12 §2, §4]
 
     D -->|All tier-0 / production-critical<br/>systems support SAML or OIDC + SCIM| D1{Conditional access<br/>requirements?<br/>device posture, risk-based,<br/>per-app step-up}
-    D -->|Some tier-0 systems lack<br/>SAML/SCIM<br/>(local creds, proprietary federation)| D2[Single corp IdP<br/>+ IGA / SCIM bridge for the gaps<br/>Okta Lifecycle, Entra Governance — ch12 §3, §10]
+    D -->|Some tier-0 systems lack<br/>SAML or OIDC + SCIM<br/>(local creds, proprietary federation)| D2[Single corp IdP<br/>+ IGA / SCIM bridge for the gaps<br/>Okta Lifecycle, Entra Governance — ch12 §3, §10]
 
     D1 -->|Yes| D3[Single corp IdP with CA engine<br/>Entra ID CA / Okta Adaptive — ch12 §3]
     D1 -->|No, MFA + SSO is enough| D4[Single corp IdP, baseline MFA — ch12 §1]
