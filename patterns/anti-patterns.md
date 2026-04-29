@@ -32,11 +32,13 @@ artifacts via blue/green or rolling replacement.
 [See ch. 01 — Foundations](../docs/01-foundations.md) ·
 <https://martinfowler.com/bliki/ImmutableServer.html>
 
-### **GitOps for a single cluster with a single team**
-Reconciler, CRDs, access model, and dual source-of-truth carry non-trivial
-cost; the break-even is roughly more than one cluster or more than one team
-sharing a cluster. **Fix:** stay on plain CI-driven `kubectl apply` /
-`helm upgrade` until you have the scale that justifies Argo CD or Flux.
+### **GitOps adopted before any of the ch01 §5 triggers hold**
+Adopting Argo CD / Flux for a single cluster, single team, single
+environment, with no compliance audit requirement, pays the reconciler /
+CRD / dual-source-of-truth tax for benefits you don't yet need. **Fix:**
+stay on plain CI-driven `kubectl apply` / `helm upgrade` until any one of
+the ch01 §5 triggers holds (>1 environment, >1 cluster, >1 team sharing a
+cluster, or a compliance regime that requires who-changed-what-when).
 [See ch. 01 — Foundations](../docs/01-foundations.md) ·
 <https://www.thoughtworks.com/radar/techniques/gitops>
 
@@ -82,9 +84,11 @@ configures and passes providers in.
 
 ### **Committing `*.tfstate` (or `.terraform/`) to git**
 State contains secrets in plaintext, and concurrent applies without locking
-will corrupt it. **Fix:** remote backend with locking (S3+DynamoDB, GCS, AzureRM
-with blob lease, Terraform/HCP, OpenTofu state encryption); add the standard
-`Terraform.gitignore`.
+will corrupt it. **Fix:** remote backend with native locking — S3 with
+`use_lockfile = true` (Terraform ≥1.10 / OpenTofu ≥1.10), GCS native lock,
+AzureRM blob lease, Terraform/HCP, or OpenTofu state encryption. **DynamoDB
+locking is now legacy / migration-only**; do not adopt it on greenfield
+work — see ch02 §4. Add the standard `Terraform.gitignore`.
 [See ch. 02 — IaC tooling](../docs/02-iac-tooling.md) ·
 <https://developer.hashicorp.com/terraform/language/state> ·
 <https://github.com/github/gitignore/blob/main/Terraform.gitignore>
@@ -147,9 +151,9 @@ against baseline and auto-aborts.
 
 ### **Vanity developer-productivity metrics (PR count, story points, "DX scores")**
 DORA research repeatedly shows these don't predict delivery performance or
-business outcomes; they create gameable targets. **Fix:** the four DORA
-metrics (lead time, deploy frequency, change-fail rate, MTTR) measured from
-real telemetry, plus team-reported reliability.
+business outcomes; they create gameable targets. **Fix:** the DORA metrics
+defined in ch11 §14 (delivery keys + reliability), measured from real
+telemetry, plus team-reported reliability.
 [See ch. 03 — CI/CD](../docs/03-ci-cd.md) ·
 <https://dora.dev/>
 

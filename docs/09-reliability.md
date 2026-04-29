@@ -18,7 +18,11 @@ Objectives"; Hidalgo, *Implementing Service Level Objectives* ch.3).
 
 - **SLI** (indicator): a *ratio of good events to valid events*, measured at the point
   closest to the user (e.g. load balancer, CDN edge, mobile RUM). Prefer ratios over
-  averages — averages hide the bad tail (SRE Workbook ch.2).
+  averages — averages hide the bad tail (SRE Workbook ch.2). SLIs are
+  aggregations *of* the wide structured events defined in ch05 §1; carrying
+  the high-cardinality dimensions on the events themselves does not violate
+  the metrics-cardinality rule in ch05 §6a — only Prometheus-class label
+  series have a cardinality budget.
 - **SLO** (objective): a target on that ratio over a *rolling window*. Pick one default
   window per org and stick to it; **30 days** matches the SRE Workbook worked examples
   (ch.5, Table 5-3) and is the recommended default. Quarterly is fine for batch.
@@ -181,7 +185,9 @@ framing):
 1. **Summary** (≤3 sentences a VP can read).
 2. **Impact.** Users affected, $ if known, SLO budget burned, regulatory exposure.
 3. **Timeline** (UTC): first detection, first page, IC assigned, key decisions, mitigation,
-   resolution.
+   resolution. Reconstruct from the audit-log pipeline defined in ch06 §15
+   (separate from observability logs) plus the standard observability
+   stream — the audit log is the authoritative record for who-did-what-when.
 4. **Trigger.** The proximate event that started the incident (a deploy, a config change, a
    traffic spike).
 5. **Contributing factors.** *Plural.* Conditions that allowed the trigger to become an
@@ -427,13 +433,28 @@ Builders' Library, "Static Stability Using Availability Zones").
 - **RTO / RPO per service**, set by the business. Tier-1 starting default: RTO ≤ 1h, RPO
   ≤ 5m. Document the *actual achievable* values; if they don't match, escalate.
 - **DR drill cadence**: full region-loss drill ≥ annually for tier-1; partial (single AZ,
-  single dependency) quarterly. Drill failures are SEV3 postmortems.
+  single dependency) quarterly. Drill failures are SEV3 postmortems. The
+  timed end-to-end DR drill itself is owned by ch08 §3 (quarterly floor,
+  monthly for tier-0); this section owns the *automated restore
+  verification* loop below.
 - **Restore, don't just back up.** A backup never restored is Schrödinger's backup;
-  automated restore test weekly, alert on age of last successful restore.
+  automated restore test weekly (scripted PITR into a throwaway instance with
+  checksum compare), alert on age of last successful restore. This weekly
+  loop is distinct from the quarterly DR drill in ch08 §3 — keep both.
 - **Runbooks + access in a separate trust domain.** A DR runbook only in the wiki of the
   cloud you just lost does not exist — mirror to a second provider or printed binder.
 - **Write down what you will *not* recover** (analytics replicas, dev envs, derived caches);
   scope discipline shortens RTO more than any tool.
+- **Multi-region: decide topology here, not in passing.** The decision to go
+  active/active vs active/passive vs single-region-with-cross-region-restore
+  is owned by this section. Synthesise the inputs from the other chapters:
+  data replication, RPO/RTO, and tier classification from ch08 §4–§5;
+  network primitives (anycast, hub-and-spoke, PrivateLink) from ch07; HA vs
+  DR distinction from §1 of this chapter. Default for tier-1: multi-AZ HA
+  plus a tested cross-region restore (per ch08 §3 DR drill). Active/active is
+  an exception with a written justification (regulator, business loss per
+  minute, measured exposure to provider regional incidents) — the cost in
+  write latency, conflict handling, and split-brain bug classes is real.
 
 ---
 
@@ -448,9 +469,11 @@ Builders' Library, "Static Stability Using Availability Zones").
 - **Any reliability metric not tied to a written SLO.** If no one signed up to the target,
   the number is decoration.
 
-DORA's four keys (lead time, deploy frequency, change-failure rate, MTTR; Forsgren et al.,
-*Accelerate* ch.2) are the *delivery* counterparts and correlate with reliability outcomes —
-measure them too, but they are not a substitute for SLOs.
+DORA's delivery keys (lead time, deploy frequency, change-failure rate,
+failed-deployment recovery time; Forsgren et al., *Accelerate* ch.2) are the
+*delivery* counterparts and correlate with reliability outcomes — measure them
+too, but they are not a substitute for SLOs. Canonical metric set and count
+live in ch11 §14.
 
 ---
 

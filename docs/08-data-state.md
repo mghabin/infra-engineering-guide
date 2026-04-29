@@ -34,9 +34,22 @@ Set retention to ≥14 days, monitor *latest restorable time* as an SLI (not jus
 
 > "An untested backup is not a backup. It's a hope."
 
-**Schedule restore drills as recurring infrastructure work**, not as a DR exercise once a year. Quarterly is the floor; monthly is right for tier-0.
+There are **two distinct activities** the industry calls "restore drills",
+and they belong to different chapters:
 
-A restore drill is not complete until: (1) a full PITR restore to a *new* instance from the off-site copy succeeded; (2) schema and row-count checksums match a known-good fixture; (3) the restore *time* was recorded and is within RTO; (4) an application instance was pointed at the restored DB and a smoke test passed. Anything less is a "the snapshot exists" check.
+- **Automated restore verification** (weekly, scripted, checksum compare) —
+  owned by ch09 §12. Catches silent corruption and broken backup pipelines
+  on a short loop.
+- **Timed end-to-end DR drill** (this section) — quarterly is the floor,
+  monthly for tier-0, with restore time recorded against RTO and a smoke
+  test pointed at the restored DB. Catches the things only a real game-day
+  finds: runbook gaps, IAM holes, cross-account/region permissions,
+  staffing.
+
+**Schedule both as recurring infrastructure work**, not as a DR exercise
+once a year.
+
+A timed end-to-end DR drill is not complete until: (1) a full PITR restore to a *new* instance from the off-site copy succeeded; (2) schema and row-count checksums match a known-good fixture; (3) the restore *time* was recorded and is within RTO; (4) an application instance was pointed at the restored DB and a smoke test passed. Anything less is a "the snapshot exists" check.
 
 Every team should answer two questions from a dashboard: **"When did we last successfully restore from cold backup?"** and **"How long did it take?"**. Google SRE ch. 26 calls this the *recoverability SLO*; treat it as a first-class indicator.
 

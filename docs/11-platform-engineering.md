@@ -62,17 +62,22 @@ do.**
 
 ---
 
-## 4. GOLDEN PATHS
+## 4. PAVED ROADS
 
-- **[GOLDEN PATHS] [must] Provide paved roads with documented off-ramps. Mandatory *controls* are acceptable; mandatory *human mediation* is the anti-pattern.**
-- Spotify's "golden path" is the supported, batteries-included way to do a thing — provision a service, ship a deploy pipeline, wire observability. In a regulated environment a control may be non-negotiable (every prod deploy must pass image signing, every database must be encrypted) and the golden path may be the only sanctioned route. That is fine *if* the path itself is self-service. The anti-pattern is when the only way to satisfy the control is "file a ticket and wait for a human": then it is not a road, it is a queue, and you are back to the bottleneck in ch01 §6.
+> Terminology: this guide uses **paved road** as the canonical term across
+> all chapters. *Golden path* is treated as a synonym (Spotify's original
+> phrasing) — see the glossary entry "Paved Road / Golden Path". New
+> normative bullets in this and other chapters use "paved road".
+
+- **[PAVED ROAD] [must] Provide paved roads with documented off-ramps. Mandatory *controls* are acceptable; mandatory *human mediation* is the anti-pattern.**
+- Spotify's "golden path" is the supported, batteries-included way to do a thing — provision a service, ship a deploy pipeline, wire observability. In a regulated environment a control may be non-negotiable (every prod deploy must pass image signing, every database must be encrypted) and the paved road may be the only sanctioned route. That is fine *if* the path itself is self-service. The anti-pattern is when the only way to satisfy the control is "file a ticket and wait for a human": then it is not a road, it is a queue, and you are back to the bottleneck in ch01 §6.
 - Sources: Spotify Engineering, *How We Use Golden Paths to Solve Fragmentation* (2020), https://engineering.atspotify.com/2020/08/how-we-use-golden-paths-to-solve-fragmentation-in-our-software-ecosystem/ ; Skelton & Pais, *Team Topologies*, Ch. 5 (X-as-a-Service); CNCF Platforms WG whitepaper, §"Capabilities".
-- Concrete check: pick the flagship golden path. (a) Are the *controls* it enforces written down and justified? (b) Can a team satisfy those controls another way without ticket-and-wait? (c) Is there a documented exception/off-ramp procedure with an SLA? Three "yes" = healthy.
+- Concrete check: pick the flagship paved road. (a) Are the *controls* it enforces written down and justified? (b) Can a team satisfy those controls another way without ticket-and-wait? (c) Is there a documented exception/off-ramp procedure with an SLA? Three "yes" = healthy.
 
-- **[GOLDEN PATHS] [should] The golden path must also be the lowest-friction *and* lowest-risk option. Make the right thing the easy thing.**
+- **[PAVED ROAD] [should] The paved road must also be the lowest-friction *and* lowest-risk option. Make the right thing the easy thing.**
 - If the paved road is more painful than rolling your own, engineers route around it (or game the controls) and the platform team ends up policing rather than enabling. The forcing function is ergonomics, not policy.
 - Sources: Spotify "Golden Paths" post (above); Fournier, *Platform Engineering*, Ch. 4 ("Ergonomics and Adoption").
-- Concrete check: time-to-first-deploy via the golden path vs off-road, including the time to satisfy required controls. If off-road is faster, the path is broken.
+- Concrete check: time-to-first-deploy via the paved road vs off-road, including the time to satisfy required controls. If off-road is faster, the path is broken.
 
 ---
 
@@ -134,7 +139,7 @@ do.**
 ## 9. BACKSTAGE
 
 - **[BACKSTAGE] [should] Consider Backstage as the IDP framework once you have sustained pain from missing software catalog and discoverable docs — typically when a single engineer can no longer enumerate every service from memory.**
-- Backstage (Spotify origin, accepted to CNCF Sandbox September 2020, promoted to **Incubating** in March 2022 — verify current status at https://www.cncf.io/projects/backstage/ before publication) gives three primitives out of the box: Software Catalog (truth for "what services exist and who owns them"), Software Templates (a concrete encoding of a golden path), and TechDocs (Markdown + MkDocs colocated with code, rendered in the catalog). At the right scale these three deliver more value than any homegrown alternative.
+- Backstage (Spotify origin, accepted to CNCF Sandbox September 2020, promoted to **Incubating** in March 2022 — verify current status at https://www.cncf.io/projects/backstage/ before publication) gives three primitives out of the box: Software Catalog (truth for "what services exist and who owns them"), Software Templates (a concrete encoding of a paved road), and TechDocs (Markdown + MkDocs colocated with code, rendered in the catalog). At the right scale these three deliver more value than any homegrown alternative.
 - Sources: Backstage docs, https://backstage.io/docs/overview/what-is-backstage ; CNCF project page, https://www.cncf.io/projects/backstage/ ; ThoughtWorks Tech Radar, *Backstage*, https://www.thoughtworks.com/radar/platforms/backstage .
 - Concrete check: every production service appears in the catalog with an owner (a team, not a person), a TechDocs entry, and at least one Software Template that could re-create a similar service.
 
@@ -195,7 +200,7 @@ do.**
 - **[ANTI-PATTERNS] [avoid] Mandatory human mediation on the paved road. The moment a human must approve every traversal, the road becomes a queue.**
 - Replacement: enforce *controls* in the path itself (signing, policy-as-code, automated review) and reserve human review for genuine exceptions with a documented SLA. Compete on quality, not policy.
 - Sources: Spotify "Golden Paths" post; Skelton & Pais, *Team Topologies*, Ch. 5; CNCF Platforms WG whitepaper, §"Capabilities".
-- Concrete check: at least one production team can satisfy required controls and ship via the golden path with zero synchronous human approvals.
+- Concrete check: at least one production team can satisfy required controls and ship via the paved road with zero synchronous human approvals.
 
 - **[ANTI-PATTERNS] [avoid] "We know what they need" — building before validating.**
 - Replacement: an MVP scoped to one consumer team that has signed up to adopt within a fixed window. Kill the project if adoption does not happen.

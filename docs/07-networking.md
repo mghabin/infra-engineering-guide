@@ -145,7 +145,10 @@ FQDN allowlists at L3/4 firewalls work by snooping SNI/DNS and are weakened or b
 - **Day one (everyone):** no public IPs on workloads; IAM-scoped service-to-service auth using cloud-native identities (IAM roles, Managed Identities, Workload Identity); TLS on every external listener.
 - **First multi-team / first regulated workload:** identity-aware proxy for human access (Cloudflare Access, Tailscale, Pomerium, Google IAP) replacing shared-secret VPNs ([Cloudflare ZT](https://developers.cloudflare.com/cloudflare-one/); [Tailscale](https://tailscale.com/blog/how-tailscale-works)).
 - **First Kubernetes platform / dozens of services:** workload identity via SPIFFE/SPIRE or cloud equivalent, mTLS at the mesh layer ([SPIFFE](https://spiffe.io/docs/latest/spiffe-about/overview/)).
-- **Maturity target:** mTLS *everywhere*, including dev. Don't make this a prerequisite for shipping; make it the destination.
+- **Maturity target:** mTLS *everywhere*, including dev. mTLS in
+  production is already a `must` per ch06 §12; this ramp is about extending
+  it to non-prod and pre-platform clusters as the org matures. Don't make
+  full-coverage a prerequisite for shipping; make it the destination.
 
 For ≤5 services, TLS to the LB + IAM-authenticated APIs is a defensible posture; mesh-mTLS is overhead you don't need yet. **Don't** treat "private subnet" as a security boundary regardless — a misconfigured IAM role still walks right through.
 
@@ -233,11 +236,15 @@ Enable jumbo frames only inside a homogeneous fabric; never across hops you don'
 
 ---
 
-## 15. Service mesh (cross-ref ch04)
+## 15. Service mesh (cross-ref ch04 §9)
 
-**Use a mesh when you need workload-identity mTLS, L7 traffic policy, or egress identity** — not because it is fashionable. Cilium (eBPF, fastest data path, doubles as your CNI), Linkerd (simplest, Rust micro-proxy), and Istio ambient (most features) are the live options ([Cilium](https://docs.cilium.io/); [Linkerd](https://linkerd.io/2/reference/architecture/); [Istio ambient](https://istio.io/latest/docs/ambient/)).
+**Mesh adoption is decided in ch04 §9** — that section owns the default
+("usually no") and the concrete triggers. This chapter only covers what a
+mesh gives you at the L7 networking layer once you have one. Cilium (eBPF,
+fastest data path, doubles as your CNI), Linkerd (simplest, Rust micro-proxy),
+and Istio ambient (most features) are the live options ([Cilium](https://docs.cilium.io/); [Linkerd](https://linkerd.io/2/reference/architecture/); [Istio ambient](https://istio.io/latest/docs/ambient/)).
 
-**Mesh-managed mTLS beats infra-mTLS** when (a) you have ≥dozens of services, (b) churn is high, or (c) you want SPIFFE identity for policy. For ≤5 services, two well-tuned LB listeners and cert-manager are simpler.
+**Mesh-managed mTLS beats infra-mTLS** when (a) you have ≥dozens of services, (b) churn is high, or (c) you want SPIFFE identity for policy. For ≤5 services, two well-tuned LB listeners and cert-manager are simpler. The must/ramp posture for mTLS itself is in ch06 §12 and ch07 §7.
 
 **Gateway API** is the upstream-blessed successor to Ingress for new platform work; Ingress remains supported but feature-frozen ([Gateway API](https://gateway-api.sigs.k8s.io/)).
 

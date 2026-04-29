@@ -200,6 +200,10 @@ the most expensive FinOps mistake.
   spikes, GC pauses, and noisy neighbors no benchmark reproduces.
 - **Don't** chase a 100%-utilized service. CPU at 100% means you are
   queueing; your latency SLO is already breached.
+- **Note** — rightsizing changes *requests*, not limits. CPU-limit policy
+  (omit on Burstable, latency-sensitive workloads to avoid CFS throttling)
+  is owned by ch04 §5; do not tighten CPU limits in the name of
+  utilization.
 
 ---
 
@@ -243,7 +247,10 @@ the most expensive FinOps mistake.
   or instance diversification.
 - **Don't** put databases, primary brokers, or anything with local state on
   spot. The drain window — even when notice is given — is not enough for a
-  multi-hour replica rebuild.
+  multi-hour replica rebuild. The Kubernetes-side guardrails (PDBs,
+  StatefulSet drain ordering) are owned by ch04 §5/§13; the resilience
+  expectations (graceful degradation under sudden node loss, error budget
+  treatment of evictions) are owned by ch09 §9.
 - **Don't** use a single instance type in your spot pool. Diversify across
   3–5 families/sizes/AZs; eviction is correlated within a pool. Documented
   in [AWS Spot Best Practices](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html).

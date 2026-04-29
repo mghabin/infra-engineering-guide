@@ -218,13 +218,13 @@ is the same manifests with different parameters.
 
 **[GITOPS] [prefer] Weigh GitOps' operational tax against the drift-correction and audit benefits before adopting in small estates.**
 A reconciler, CRDs, an extra access model, and a second source of truth (git
-plus cluster) all have non-trivial cost. For a single cluster with one team
-and one environment, that cost can exceed the marginal benefit over a
-disciplined CI pipeline — but not always: regulated environments may value
-the continuous-reconcile audit trail enough to justify it from day one.
-Decide explicitly rather than by default.
+plus cluster) all have non-trivial cost. Adopt when **any one** of these
+triggers holds: more than one environment, more than one cluster, more than
+one team sharing a cluster, or any compliance regime that asks
+"who-changed-what-when". Below all four triggers, a disciplined CI pipeline
+is usually the right answer; decide explicitly rather than by default.
 - Sources: ThoughtWorks Radar *GitOps* (caveats around scope); OpenGitOps v1.0.0 (audit + reconciliation as primary benefits); Morris *IaC* (3rd ed), Ch. 1.
-- Concrete check: before adopting Argo CD / Flux, write down (a) what fails *today* that GitOps would fix, and (b) the audit/compliance properties it adds. If both are weak, defer; if either is strong, adopt.
+- Concrete check: before adopting Argo CD / Flux, write down (a) which of the four triggers (>1 env / >1 cluster / >1 team / compliance audit) currently applies, and (b) what fails *today* that GitOps would fix. If none of the triggers holds and (b) is weak, defer; otherwise adopt.
 
 ---
 
@@ -346,7 +346,7 @@ are easier to test, upgrade, and delete.
 The original DevOps thesis: feedback from production is a primary input to
 design, and it cannot reach designers if a wall sits between them and the
 pager. The point is not "delete the SRE team" — platform/SRE teams are
-valuable when they provide *leverage* (paved roads, golden paths, shared
+valuable when they provide *leverage* (paved roads, shared
 observability). Ownership of correctness in production sits with the team
 that wrote the code. This is a strong default, not an absolute: regulated
 estates, 24×7 follow-the-sun coverage, and shared infra services
