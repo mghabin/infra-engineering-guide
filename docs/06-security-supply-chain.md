@@ -57,6 +57,12 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
 - **Image signature/attestation verification is not at parity between the two.** Kyverno ships `verifyImages` natively (cosign + notary, keyless or key-based, attestation predicate matching). Gatekeeper has no built-in verifier — you bolt on Sigstore Policy Controller, Connaisseur, or Ratify as a separate admission webhook. If signature verification is a hard requirement and you don't already run Gatekeeper, Kyverno is the shorter path.
 - Use **Conftest** to apply Rego in CI against Terraform plans, Dockerfiles, Kubernetes manifests, and Helm charts *before* they reach the cluster. **Polaris** is a useful resource-request lint pass; **kube-bench** runs the CIS Kubernetes Benchmark against a live cluster.
 - **Do** ship policies as a versioned bundle (OCI artifact or git submodule) so the same rules run locally (`conftest test`), in CI, and in admission. Drift between layers is how exceptions become permanent.
+- **Canonical:** ch06 §4 owns the policy-as-code decision for the guide:
+  pick **one** engine per estate (Kyverno or OPA/Gatekeeper), **write
+  policies once** and **enforce in CI *and* at admission** from the **same
+  bundle**. ch02 §6 (Conftest in IaC), ch04 §7 (Kubernetes admission),
+  ch07 §16 (firewall-as-code), and ch10 (tag enforcement) cite this rule
+  rather than re-deciding it.
 
 ---
 
@@ -167,8 +173,15 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
 
 - **Do** adopt the **BeyondCorp** posture: no network is trusted, every request authenticated and authorized at the application layer with device + user identity. Primary sources: the six Google BeyondCorp papers (2014–2017) and NIST SP 800-207 (*Zero Trust Architecture*).
 - **No public IPs by default.** Workloads on private subnets; ingress via load balancers or IAPs; egress through NAT/egress gateway with allow-listed destinations. NIST SP 800-204D codifies this for microservices.
-- **mTLS between services.** A mesh (Istio, Linkerd, Cilium) gives you this for free; without a mesh, do it in the app or accept the risk in writing.
-- **Default-deny network policies** in every namespace. `kubectl get networkpolicy -A` returning "No resources found" in a multi-tenant cluster is a finding.
+- **mTLS between services** is required in production for service-to-service
+  traffic (a `must`). Non-prod and pre-platform clusters may stage it as part
+  of the maturity ramp in ch07 §7. A mesh (Istio, Linkerd, Cilium) is one
+  implementation that gives this for free; without a mesh, do it in the app
+  or accept the risk in writing. The mesh adoption decision itself belongs
+  in ch04 §9 — this chapter only covers what mTLS gives you.
+- **Default-deny network policies** in every namespace — canonical rule and
+  YAML in ch04 §8. `kubectl get networkpolicy -A` returning "No resources
+  found" in a multi-tenant cluster is a finding.
 - **Don't** rely on VPC/subnet boundaries as a security control — they are blast-radius, not authentication.
 
 ---
@@ -204,7 +217,7 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
   - **Encryption at rest** with customer-managed keys where the framework requires it (PCI, FedRAMP Moderate+).
   - **Access reviews** — quarterly export of IAM/RBAC, signed off.
   - **Change management trail** — every prod change traceable to a merged PR and a deployment record. GitOps gives you this nearly free.
-  - **Backups + tested restore** — untested backups are not backups. Run a restore drill quarterly and record actual RTO/RPO.
+  - **Backups + tested restore** — untested backups are not backups. Two cadences (defined in ch08 §3): an automated restore-verification loop (weekly, scripted, owned by ch09 §12) and a timed end-to-end DR drill (quarterly floor, monthly tier-0, owned by ch08 §3) that records actual RTO/RPO.
 - **Avoid** building a separate "compliance pipeline." If your normal pipeline can't produce the evidence (signed builds, SBOMs, audit logs, change tickets), fix the pipeline.
 
 ---

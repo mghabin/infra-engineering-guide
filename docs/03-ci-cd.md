@@ -11,8 +11,10 @@ here is do-this-by-default; deviations should be justified in code review.
 > they build, runners are *ephemeral and isolated*, deploys are *pull-based
 > from Git* for mature multi-team Kubernetes and *push-based via OIDC* for
 > serverless/IaC, every release artifact is **SBOM'd, signed, and attested to
-> SLSA Build L2 (target L3)**, and the four DORA metrics are the north-star —
-> supported by a small set of operational leading indicators.
+> the SLSA Build level defined in ch06 §9 (currently L3 for production
+> artifacts)**, and DORA's delivery+reliability metrics are the north-star
+> (canonical count owned by ch11 §14) — supported by a small set of
+> operational leading indicators.
 
 ---
 
@@ -64,9 +66,10 @@ leave the cluster; `git log` is the audit log.
   deploys are pull-based via Argo CD or Flux. (Sources: Argo CD / Flux docs;
   CNCF GitOps WG *OpenGitOps Principles v1.0*; ThoughtWorks Tech Radar — GitOps
   in *Adopt* since 2022.)
-- **prefer:** GitOps even for small single-team clusters once you promote
-  across more than one environment. The failure mode of `kubectl apply` from CI
-  (no drift detection, secrets in CI, cluster creds escaping) is high.
+- **prefer:** GitOps once any of the ch01 §5 adoption triggers holds (>1
+  environment, >1 cluster, >1 team sharing a cluster, or a compliance regime
+  that requires who-changed-what-when). The decision criteria are owned in
+  ch01 §5; this chapter only covers the mechanics.
 - **must:** if you push-deploy to Kubernetes, the CI principal is short-lived
   (OIDC), namespace-scoped, never cluster-admin. No long-lived kubeconfig in
   repo secrets. The env repo references images by **digest** (`@sha256:…`), not
@@ -96,12 +99,15 @@ workflows on hosted runners — `slsa-framework/slsa-github-generator`, GitLab
 hosted SLSA L3 runners).
 
 - **must:** every release artifact (container image, binary, package) ships with a
-  signed SLSA provenance attestation at **Build L2** minimum. *Concrete check:*
+  signed SLSA provenance attestation at the level defined in ch06 §9 (currently
+  **Build L3 for production artifacts**; L2 acceptable only for non-prod).
+  *Concrete check:*
   `cosign verify-attestation --type slsaprovenance <image@digest>` succeeds in a
   non-CI environment. (Sources: SLSA v1.0 spec — Build Track; GitHub Actions *Using
-  artifact attestations*.)
-- **should:** Build L3 for anything user-facing, internet-exposed, or consumed by
-  other teams as a base image / shared library.
+  artifact attestations*. Canonical level owner: ch06 §9.)
+- **should:** for non-production builds where L3 isn't yet feasible, document the
+  L2 exception and the path to L3 (typically a switch to a hosted reusable
+  workflow such as `slsa-framework/slsa-github-generator`).
 - **prefer:** publish provenance via the OCI 1.1 referrers API so consumers can
   fetch it alongside the image without a side channel.
 
@@ -155,6 +161,8 @@ models that can't tolerate publishing artifact metadata externally.
 - **must:** promotion is **promote-by-digest**. The same `image@sha256:…` that
   passed staging is what runs in prod — **no rebuild on promote**. A rebuild
   produces a new digest, invalidating prior attestations, scans, and approvals.
+  The signing/provenance/admission chain that gives this digest its meaning
+  is owned by ch06 §9–§11 (SLSA → Sigstore → admission verification).
 - **should:** builds aim for **hermeticity** — declared inputs only, no network
   at build time beyond a pinned mirrored proxy, deterministic outputs where the
   toolchain allows (`SOURCE_DATE_EPOCH`, Bazel, Nix). Hermeticity is the
@@ -207,11 +215,12 @@ writing the trust policy against specific claims.
   Azure *Workload identity federation*; Google Cloud *Workload Identity Federation
   with GitHub Actions*.)
 - **must:** the cloud trust policy validates the `sub` claim (and `aud` where
-  supported) against an explicit pattern that bounds **repo + ref/environment**,
-  not just the org. Acceptable `sub` patterns:
+  supported) against an explicit pattern that bounds **repo + ref/environment**.
+  Canonical sub-claim schema and per-cloud trust-policy details (AWS / Azure /
+  GCP) live in **ch06 §3**; in CI specifically also include `environment:` for
+  deploy jobs (e.g., `repo:acme/payments:environment:prod`,
   `repo:acme/payments:ref:refs/heads/main`,
-  `repo:acme/payments:environment:prod`, `repo:acme/payments:pull_request`
-  *(read-only roles only)*.
+  `repo:acme/payments:pull_request` *(read-only roles only)*).
 - **should:** for high-blast-radius roles (prod write, IAM mutation, KMS use),
   additionally constrain **`job_workflow_ref`** to a specific reusable workflow
   pinned to a tag or SHA — e.g.,
@@ -338,22 +347,43 @@ server. Release = users see them. The toolkit, ordered by complexity:
 - **avoid:** "canary" that is actually just "deploy to one pod and see if it
   crashes." That is a smoke test.
 
+### 7.1 Schema-coupled releases
+
+When an application change requires a coupled schema change, the schema work
+itself (expand/contract, dual-write, backfill, switch reads, drop the old)
+is owned by **ch08 §10**; this chapter only covers the **release-side
+coordination**:
+
+- **must:** ship the schema change and the app change as **independently
+  deployable** steps. No deploy that requires app and DDL to land
+  atomically — that is unrollback-able.
+- **must:** gate the cut-over with a feature flag (per §7) so reads/writes
+  of the new shape can be enabled, paused, or reverted without a redeploy.
+- **should:** dual-deploy old and new app versions during the contract
+  step; keep both compatible with the intermediate schema.
+- **must:** define the abort path before merging the migration PR — which
+  flag flips off, which app version is rolled forward, what data
+  reconciliation runs.
+
 ---
 
 ## 8. Metrics: DORA as north-star, plus operational leading indicators
 
-From *Accelerate* (Forsgren / Humble / Kim) and the annual DORA reports: four
-outcome metrics predict both delivery and organizational performance — **deployment
-frequency**, **lead time for changes**, **change-failure rate**, **mean time to
-restore**.
+From *Accelerate* (Forsgren / Humble / Kim) and the annual DORA reports: the
+DORA program now publishes **five** software-delivery metrics — the original
+four delivery keys (deployment frequency, lead time for changes,
+change-failure rate, failed-deployment recovery time) plus a reliability
+metric. ch11 §14 is the canonical statement of the count and the current
+names; this chapter inherits it.
 
 DORA is the *outcome* layer; pair it with a few **leading indicators** for
 pipeline health, since lead time degrades long before deployment frequency does.
 
-- **must:** the four DORA metrics are instrumented and visible to the team that
-  owns the service — not "the platform team has a dashboard somewhere." Trend,
-  not snapshot — weekly average over a 4-week window. (Sources: DORA *Accelerate
-  State of DevOps Report* 2023 / 2024; *Accelerate*, Forsgren/Humble/Kim, ch. 2.)
+- **must:** the DORA metrics defined in ch11 §14 are instrumented and visible
+  to the team that owns the service — not "the platform team has a dashboard
+  somewhere." Trend, not snapshot — weekly average over a 4-week window.
+  (Sources: DORA *Accelerate State of DevOps Report* 2023 / 2024,
+  https://dora.dev/ ; *Accelerate*, Forsgren/Humble/Kim, ch. 2.)
 - **should:** track operational leading indicators — **CI queue time** (p50/p95)
   for runner saturation, **pipeline duration** (p50/p95) for feedback latency,
   **flaky-test rate** (tests passing on retry without code change — rises before
@@ -423,7 +453,7 @@ you have built a queue. The right model (Team Topologies, *Accelerate*,
 ThoughtWorks Tech Radar on "platform as a product"): **platform team** owns
 reusable workflows, the runner fleet, the signing/SBOM/OIDC building blocks,
 and the policy. **Delivery teams** own *their* `.github/workflows/*.yml` /
-`gitlab-ci.yml`, consuming the shared blocks; they can fork the golden path
+`gitlab-ci.yml`, consuming the shared blocks; they can fork the paved road
 and pay the cost. Platform's product is *the paved road*, not *the only road*.
 
 - **avoid:** a single monorepo of pipeline YAML maintained by platform and

@@ -823,6 +823,16 @@ Local cache or proxy of *Terraform*/*OpenTofu* providers used for offline or pin
 - **Used in**: ch02 §1
 - **Sources**: Terraform docs — *Provider Network Mirror Protocol* — https://developer.hashicorp.com/terraform/internals/provider-network-mirror-protocol
 
+### Promote-by-Digest
+Promotion discipline where the same OCI image referenced by `image@sha256:…` is what flows from staging to production — **no rebuild on promote**. A rebuild produces a new digest, invalidating prior signatures, attestations, scans, and approvals. Distinct from *pin by digest* (consumer-side reference), though they reinforce each other: promote-by-digest is the registry/CD discipline that makes pin-by-digest meaningful end-to-end.
+- **Used in**: ch03 §3.4, ch04 §2, ch06 §11
+- **Sources**: OCI Distribution Spec — https://github.com/opencontainers/distribution-spec ; SLSA v1.0 — https://slsa.dev/spec/v1.0/
+
+### Pin by Digest
+Consumer-side reference discipline: workloads, manifests, base images, and GitHub Actions are pinned to an immutable content hash (`@sha256:…` or full commit SHA) rather than a mutable tag (`:latest`, `@v3`). Required for reproducibility and for *Promote-by-Digest* to be meaningful in production.
+- **Used in**: ch03 §4.1, ch04 §2
+- **Sources**: OCI Distribution Spec — https://github.com/opencontainers/distribution-spec ; GitHub Actions security hardening — https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
+
 ### PSA (Pod Security Admission)
 Kubernetes built-in admission controller enforcing *privileged*, *baseline*, or *restricted* profiles per namespace. Successor to *PodSecurityPolicy*.
 - **Used in**: ch04, ch06 §3

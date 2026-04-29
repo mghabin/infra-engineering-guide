@@ -210,8 +210,11 @@ securityContext:
 mounts in app workloads. If your app needs them, it's a node agent — lives
 in `kube-system` with a written threat model.
 
-For policy beyond PSA defaults: Kyverno or Gatekeeper. For runtime
-detection: Falco / Tetragon (ch07). Liz Rice, *Container Security* is the
+For policy beyond PSA defaults: Kyverno or Gatekeeper. **Pick one and bind
+it to the same policy bundle that runs in CI** — this admission layer is
+the runtime half of the policy-as-code rule owned by ch06 §4 (and the
+pre-merge half cross-checked by ch06 §11 admission verification). For
+runtime detection: Falco / Tetragon (ch07). Liz Rice, *Container Security* is the
 canonical reference; required reading before anyone proposes gVisor or Kata.
 
 ---

@@ -91,7 +91,7 @@ module that takes 47 variables and conditionally creates everything.
 
 **Should — start with two layers; add a third only when modules cross teams.** Default is *resource modules* (~50–300 lines, thin wrappers, versioned) plus *root / live config* (per-environment instantiations, no logic, only wiring and `tfvars`). Once two or more teams consume the same composition (ALB + target group + ECS service + log group + alarms), promote it to a *service module* layer. Forcing the three-layer split on a single team adds indirection without improving safety.
 
-**Should — version every shared module and pin the consumer.** Use semver tags: `source = "git::ssh://...//modules/vpc?ref=v1.4.2"` or registry `version = "~> 1.4"`. Floating refs (`ref=main`) in a root module are an outage waiting to happen.
+**Should — version every shared module and pin the consumer.** Use semver tags: `source = "git::ssh://...//modules/vpc?ref=v1.4.2"` or registry `version = "~> 1.4"`. Floating refs (`ref=main`) in a root module are an outage waiting to happen. Once shared modules are consumed by multiple teams they become a *platform surface* and should be governed under the platform-tooling rules in ch11 §15 (versioning, deprecation, contribution model).
 
 **Prefer — registry over in-repo monorepo for modules consumed by ≥3 teams.** Below that threshold, the operational cost of a registry exceeds the benefit.
 

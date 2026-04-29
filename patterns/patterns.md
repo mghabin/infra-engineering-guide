@@ -37,7 +37,7 @@ Declarative, versioned & immutable, pulled automatically, continuously
 reconciled. The git repo is the single source of intent; an in-cluster agent
 pulls and applies. Works because the cluster credentials never leave the
 cluster and the audit trail is `git log`.
-- **When to use:** more than one cluster, more than one team, more than one environment, or any compliance regime that asks "who changed what when".
+- **When to use:** any one of: more than one environment, more than one cluster, more than one team sharing a cluster, or a compliance regime that asks "who changed what when". Decision criteria owned in ch01 §5.
 - **Pitfalls:** calling CI-driven `kubectl apply` "GitOps" (it's push, not pull, and it isn't reconciled). Using long-lived branches per environment instead of directories/overlays.
 - **See:** ch. 1, ch. 3 *CI/CD*; <https://opengitops.dev/>, <https://argo-cd.readthedocs.io/>, <https://fluxcd.io/flux/>.
 
@@ -182,9 +182,10 @@ namespace with a documented exception.
 
 ### Default-deny NetworkPolicy
 
-Every namespace ships with a deny-all NetworkPolicy; allow-lists are
-explicit. Forces the egress and ingress requirements of every service to be
-*declared*, which is also the documentation.
+Canonical rule and example YAML are owned by ch04 §8: every namespace ships
+with a deny-all NetworkPolicy and allow-lists are explicit. Forces the
+egress and ingress requirements of every service to be *declared*, which
+is also the documentation.
 - **When to use:** every multi-tenant or PCI/HIPAA-adjacent cluster, which in practice is every cluster.
 - **Pitfalls:** writing the deny-all and forgetting the allow for kube-dns; policies that only cover ingress (egress to the internet stays open).
 - **See:** ch. 4, ch. 7 *Networking*; <https://kubernetes.io/docs/concepts/services-networking/network-policies/>.
@@ -392,10 +393,11 @@ managed service sells you.
 ### 3-2-1 backups + tested restore drill
 
 Live DB + same-region snapshots + cross-account, cross-region, object-locked
-off-site copy *written by a separate identity*. Run a timed end-to-end
-restore drill quarterly (monthly for tier-0). Dashboard "time since last
-successful restore" and page when it exceeds policy. **A backup you have
-not restored is a hope.**
+off-site copy *written by a separate identity*. Run two restore loops (per
+ch08 §3): an automated weekly restore-verification job (owned by ch09 §12)
+and a timed end-to-end DR drill quarterly (monthly for tier-0). Dashboard
+"time since last successful restore" and page when it exceeds policy.
+**A backup you have not restored is a hope.**
 - **When to use:** every system of record, every audit log, every compliance bucket.
 - **Pitfalls:** treating multi-AZ standbys or read replicas as backups; backups encrypted by the same key the workload identity controls (one IAM mistake = no backup).
 - **See:** ch. 8; <https://sre.google/sre-book/data-integrity/>, <https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html>.
@@ -590,9 +592,11 @@ to win either way.
 ### Measure platforms by consumers' DORA, not platform output
 
 A platform is successful when its consuming stream-aligned teams have
-better DORA metrics (deploy frequency, lead time, change-failure rate,
-MTTR) and high adoption of platform features — *not* when the platform
-team has shipped many features or closed many tickets.
+better DORA metrics — the four delivery keys (deploy frequency, lead time,
+change-failure rate, failed-deployment recovery time) plus the reliability
+metric — and high adoption of platform features, *not* when the platform
+team has shipped many features or closed many tickets. Canonical metric
+definitions and count: ch11 §14.
 - **When to use:** every platform-team OKR cycle.
 - **Pitfalls:** dashboards of platform-team velocity; adoption rates that aren't tied to a consumer outcome.
 - **See:** ch. 3, ch. 11; <https://dora.dev/>, <https://itrevolution.com/product/accelerate/>.

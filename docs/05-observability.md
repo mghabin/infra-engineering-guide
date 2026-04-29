@@ -22,10 +22,14 @@ most of the industry is still doing monitoring in an OTel t-shirt.
   O'Reilly 2018, ch. 4).
 - **Reject "the three pillars" as a design framework.** Logs / metrics /
   traces is a *vendor billing taxonomy*. The unit of observability is a
-  **wide, structured event** with as many high-cardinality dimensions as
+  **wide structured event** (canonical term in this guide; "wide event"
+  and "structured event" are short forms used interchangeably below) with
+  as many high-cardinality dimensions as
   you can afford (user_id, tenant_id, build_sha, shard, k8s_pod,
   feature_flag_state). Metrics and traces are projections of that event
-  stream; logs are degenerate events with bad schemas.
+  stream; logs are degenerate events with bad schemas. Distinct from
+  ch08's *domain events* (event sourcing) — see the glossary entry
+  "Wide Event".
 - **Cardinality is an asset *in the right signal*.** A wide event with
   per-request user/tenant/build fields lets you answer "why is p99 bad
   for tenant X on canary Y in eu-west-1?" without code changes. The same
@@ -149,7 +153,9 @@ There is no single "best" topology — the patterns compose:
   (compliance/security/legal, often break-glass); and a **different
   schema** with mandatory actor, action, resource, outcome, source IP,
   request ID. Mixing them with observability logs means one stream's
-  retention silently breaks the other's compliance posture.
+  retention silently breaks the other's compliance posture. The canonical
+  definition of an audit log (storage, access, retention) is owned by
+  ch06 §15 — this section only covers the *transport* separation.
 
 ---
 
@@ -165,9 +171,11 @@ There is no single "best" topology — the patterns compose:
   whole tree or none of it" ([OTel sampling](https://opentelemetry.io/docs/concepts/sampling/)).
   Don't roll your own propagation — use W3C `traceparent` (§2).
 
-### 5a. Tail sampling: rules and constraints
+### 5a. Tail-based sampling: rules and constraints
 
-Tail sampling is decide-after-trace-completes, in a Collector gateway tier
+**Tail-based sampling** (OTel canonical wording — used as the canonical
+form across this guide; "tail sampling" appears as a short form below) is
+decide-after-trace-completes, in a Collector gateway tier
 ([tailsamplingprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/tailsamplingprocessor)).
 It supports **fixed policies** — `status_code`, `latency` (fixed
 millisecond threshold), `string_attribute`, `numeric_attribute`,
@@ -307,7 +315,11 @@ this at runtime:
 
 ## 8. Telemetry cost model
 
-Treat telemetry as a workload with a budget.
+Treat telemetry as a workload with a budget. Allocation, showback /
+chargeback, and anomaly detection on that budget follow the same rules as
+any other cloud cost line and are owned by ch10 §11 (allocation) + ch10
+§12 (anomaly detection); this section covers only the *generation-side*
+cost knobs.
 
 | Signal | Dominant cost driver | Notes |
 |---|---|---|

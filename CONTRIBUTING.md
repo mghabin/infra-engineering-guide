@@ -30,7 +30,10 @@ with opinions, not as a comprehensive textbook.
 
 ## Style
 
-Each chapter follows the same shape:
+Each chapter follows one of two equivalent shapes; declare which at the top
+of the chapter (most chapters already do via a `> Conventions:` block).
+
+**Form A — bullet form (default for ch01, ch02, ch03, ch07, ch08, ch10, ch11):**
 
 ```
 [CATEGORY] [SEVERITY: must|should|prefer|avoid] one-line opinion
@@ -38,10 +41,23 @@ Each chapter follows the same shape:
   Concrete check: how a reviewer can verify this in a PR or repo
 ```
 
-- `must` — load-bearing; production failure or compliance risk if missed.
-- `should` — strongly recommended; deviate only with documented reason.
-- `prefer` — taste call backed by evidence; reasonable people may differ.
-- `avoid` — explicitly rejected; replacement is named.
+**Form B — `Do/Don't/Prefer` prose form (used in ch04, ch05, ch06, ch09):**
+
+```
+**Do** … one-line opinion. Source: <url or book + page>. Concrete check: …
+**Don't** … explicitly rejected pattern with a named replacement.
+**Prefer** … taste call backed by evidence.
+```
+
+Severity mapping between the two forms:
+
+- `must`  ≡ `Do` (load-bearing; production failure or compliance risk if missed).
+- `should` ≡ `Prefer` (strongly recommended; deviate only with documented reason).
+- `prefer` ≡ `Prefer` (taste call backed by evidence; reasonable people may differ).
+- `avoid` ≡ `Don't` (explicitly rejected; replacement is named).
+
+A chapter picks one form and uses it consistently. Mixing forms inside one
+chapter is rejected in review.
 
 ## Sourcing rules
 
