@@ -353,7 +353,10 @@ Pick a **namespace pattern** and document it:
 
 **RBAC depth.** Default to namespaced `Role` + `RoleBinding`; reserve
 `ClusterRole` for cluster-wide reads (nodes, CRDs, metrics). Bind humans
-through groups (OIDC / IdP claims), never by user. Audit
+through groups (OIDC / IdP claims), never by user — the IdP federation, group
+sourcing, and SCIM-driven group membership that make this safe are owned by
+[ch12 §4 Federation & SSO](./12-identity.md#4-federation--sso) and
+[ch12 §6 Authorization](./12-identity.md#6-authorization). Audit
 `ClusterRoleBinding`s quarterly — they accumulate
 ([K8s — RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)).
 

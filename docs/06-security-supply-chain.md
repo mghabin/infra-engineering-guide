@@ -10,7 +10,7 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
 
 - **Without a threat model you are cargo-culting controls.** STRIDE for classic asset/tamper analysis, LINDDUN when personal data is in scope. The four questions from the *Threat Modeling Manifesto* are the irreducible core: *what are we working on, what can go wrong, what are we going to do about it, did we do a good enough job?*
 - **Do** keep the threat model in the repo and review it on every architectural change. Out-of-tree threat models are out-of-date.
-- **Do** map each threat to a control and a test. NIST SP 800-218 (SSDF) PW.1 requires this traceability.
+- **Do** map each threat to a control and a test. NIST SP 800-218 (SSDF) PW.1 requires this traceability (https://csrc.nist.gov/publications/detail/sp/800-218/final).
 - **Don't** start a security review with a tool. Start with the data-flow diagram, trust boundaries, and assets.
 
 ---
@@ -28,11 +28,13 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
 
 - **Do** prefer cloud-native KMS in single-cloud — IAM is already your auth plane. Vault wins for multi-cloud, dynamic DB credentials, or PKI/SSH CA. ESO is plumbing, not a secret store. SOPS+age is acceptable for GitOps when you can't yet run a secret manager.
 - **Avoid** writing secrets into container images, baked AMIs, or `values.yaml` checked into VCS. If `git log -p | grep -iE 'password|secret|key'` returns hits, you have a rotation event, not a code review comment.
-- **Do** rotate. CIS Controls v8 (Control 5) and PCI-DSS v4.0 §8 require defined rotation periods; pick one (≤90 days human, ≤24h workload) and enforce via the store, not a calendar.
+- **Do** rotate. CIS Controls v8 (Control 5) and PCI-DSS v4.0 §8 require defined rotation periods; pick one (≤90 days human, ≤24h workload) and enforce via the store, not a calendar. (Human-credential rotation cadence and authenticator strength are owned by [ch12 §3 Authentication strength](./12-identity.md#3-authentication-strength); this rule is the workload half.)
 
 ---
 
 ## 3. Workload identity — the "no static credentials" rule
+
+> Workforce (human) identity — engineers, admins, contractors, JML, MFA, break-glass — is owned by [ch12](./12-identity.md). This section is exclusively about non-human principals (pods, CI jobs, batch workers).
 
 - **Static long-lived cloud credentials in CI or on workloads are a serious incident.** The Codecov 2021, CircleCI 2022, and a long tail of S3-leak postmortems all share the same root cause: a long-lived `AKIA…` or service-account JSON sitting somewhere it shouldn't.
 - **Do** use platform workload identity. The mechanisms differ — they are not interchangeable:
@@ -47,7 +49,7 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
   - **Azure** — federated credential on the app registration / managed identity scoped by `subject` (e.g., `repo:ORG/REPO:environment:prod`) and `issuer` = the GitHub OIDC issuer. Azure federated credentials accept **any OIDC issuer** (up to 20 per identity) — federation is not GitHub-only.
 - **Note:** GitHub OIDC claims include no stable per-job identifier you can pin in a cloud trust policy. Scope on `repository`, `ref`, `environment`, `workflow_ref`; use protected `environments` to gate prod role assumption.
 - **Do** federate non-cloud workloads too. **AWS IAM Roles Anywhere** (GA 2022) lets on-prem or third-cloud workloads exchange an X.509 cert from your private CA for short-lived AWS credentials — there is no longer a reason for an `AKIA…` to exist on a workload anywhere. GCP's recommended posture is the org policy `iam.disableServiceAccountKeyCreation` (default-on for new orgs); SA JSON keys are an exception that needs justification, not a default.
-- **Don't** create an IAM user for a service. The right cardinality of IAM users — and SA keys, and SP client secrets — in a modern cloud account is "humans who break-glass, plus zero."
+- **Don't** create an IAM user for a service. The right cardinality of IAM users — and SA keys, and SP client secrets — in a modern cloud account is "humans who break-glass, plus zero." (Break-glass identity lifecycle, sealing, and use-monitoring are owned by [ch12 §8 Break-glass](./12-identity.md#8-break-glass).)
 
 ---
 
@@ -73,10 +75,10 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
 
 ## 5. Benchmarks — what actually matters
 
-- The CIS Benchmarks (Kubernetes, Docker, Linux, AWS/Azure/GCP) are the closest thing to a vendor-neutral baseline — and full of low-value checks shipped with high severities. Internalise the controls that move the needle:
+- The CIS Benchmarks (Kubernetes, Docker, Linux, AWS/Azure/GCP — https://www.cisecurity.org/cis-benchmarks) are the closest thing to a vendor-neutral baseline — and full of low-value checks shipped with high severities. Internalise the controls that move the needle:
   - **K8s:** API server `--anonymous-auth=false`, audit logging on, RBAC on, etcd encryption at rest, PSA `restricted` (or equivalent Kyverno/Gatekeeper/CEL policies) in app namespaces, default-deny NetworkPolicy.
   - **Containers:** non-root `USER`, read-only root FS, no `--privileged`, no `hostNetwork`/`hostPID`, drop all capabilities and re-add only what's needed, seccomp `RuntimeDefault`.
-  - **Cloud:** root account MFA + no access keys, CloudTrail / Activity Log / Cloud Audit Logs enabled in *every* region/subscription/project, default encryption on object storage, no public-by-default buckets/blobs.
+  - **Cloud:** root account MFA + no access keys, CloudTrail / Activity Log / Cloud Audit Logs enabled in *every* region/subscription/project, default encryption on object storage, no public-by-default buckets/blobs. (MFA strength for human/root access — phishing-resistant FIDO2/WebAuthn at AAL3 — is owned by [ch12 §3 Authentication strength](./12-identity.md#3-authentication-strength).)
 - **Avoid** treating "100% CIS pass" as the goal. The goal is a low-noise report where every remaining finding has a written exception.
 
 ---
@@ -229,7 +231,7 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
 ## 13. Access — IAP > VPN
 
 - **Do** front internal apps with an **identity-aware proxy** instead of a flat VPN. Cloudflare Access, Google IAP, Pomerium, and Tailscale enforce per-request identity + device posture; a VPN gives the laptop the network, then trusts everything on it. **Teleport** is the right answer for SSH/Kubernetes/DB with session recording and short-lived certs — `~/.ssh/authorized_keys` on prod hosts is a finding.
-- **Do** require **phishing-resistant, impersonation-resistant** MFA — FIDO2 / WebAuthn (security keys or platform authenticators that meet the verifier-impersonation-resistance requirement) — for all human access to production. NIST SP 800-63B AAL3 requires impersonation-resistance and verifier-impersonation-resistance (§5.1.7, §5.1.9), which FIDO2 with appropriate authenticators (hardware security keys, or platform authenticators backed by attested hardware) satisfies; the requirement is the property, not specifically a separate hardware token. TOTP is phishable; SMS is worse. (Sources: NIST SP 800-63-3 / 800-63B §5.1.7 *Multi-Factor Cryptographic Software / Devices* and §5.1.9 *Multi-Factor Cryptographic Devices*, https://pages.nist.gov/800-63-3/sp800-63b.html .)
+- **Do** require phishing-resistant MFA (FIDO2 / WebAuthn at AAL3) for all human access to production. Authenticator selection, AAL mapping, and the full NIST SP 800-63B rationale are owned by [ch12 §3 Authentication strength](./12-identity.md#3-authentication-strength); this chapter only requires that the IAP in front of internal apps enforces it.
 
 ---
 
@@ -253,7 +255,7 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
 ## 15. Compliance — what infra actually owns
 
 - Most of ISO 27001 / SOC 2 / FedRAMP / PCI / EU CRA is paperwork the security team drives. The infra deliverables are narrow:
-  - **Audit logging** on for the control plane: CloudTrail (all regions, log file validation, immutable bucket), Azure Activity Log + Diagnostic Settings, GCP Cloud Audit Logs (Admin Activity + Data Access where scoped). **ch06 owns the audit-log transport requirement**: centralise to a write-once / object-lock store outside the producing account, with a documented retention period meeting the strictest applicable framework (PCI 1y hot + 1y cold floor; FedRAMP 3y; CRA aligns with vendor support period). Detection wiring (SIEM ingestion, query workload) is ch05 §X; this chapter requires only that the bytes reach an immutable destination.
+  - **Audit logging** on for the control plane: CloudTrail (all regions, log file validation, immutable bucket), Azure Activity Log + Diagnostic Settings, GCP Cloud Audit Logs (Admin Activity + Data Access where scoped). **ch06 owns the audit-log transport requirement**: centralise to a write-once / object-lock store outside the producing account, with a documented retention period meeting the strictest applicable framework (PCI 1y hot + 1y cold floor; FedRAMP 3y; CRA aligns with vendor support period). Detection wiring (SIEM ingestion, query workload) is ch05 §X; this chapter requires only that the bytes reach an immutable destination. Identity events (sign-in, MFA, PIM elevation, SCIM, break-glass use) feed this same pipeline — the catalogue of required identity signals lives in [ch12 §11 Audit & telemetry](./12-identity.md#11-audit--telemetry).
   - **Encryption at rest** with customer-managed keys where the framework requires it (PCI, FedRAMP Moderate+).
   - **Access reviews** — quarterly export of IAM/RBAC, signed off.
   - **Change management trail** — every prod change traceable to a merged PR and a deployment record. GitOps gives you this nearly free.
@@ -328,7 +330,7 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
 - [ ] Audit logs centralised, immutable (object-lock), retained per the strictest applicable framework, queried by detections.
 - [ ] Default-deny NetworkPolicy per app namespace; identity-based microsegmentation per NIST 800-207A; no public IPs by default; egress allow-listed.
 - [ ] mTLS in production for service-to-service traffic (mechanics in ch07 §7).
-- [ ] IAP for human access; WebAuthn MFA; no flat VPN.
+- [ ] IAP for human access; WebAuthn MFA; no flat VPN. (Authenticator strength and IdP wiring: [ch12 §3](./12-identity.md#3-authentication-strength), [ch12 §4](./12-identity.md#4-federation--sso).)
 - [ ] Falco (or equivalent) on every prod node; rules tuned, alerts routed.
 - [ ] Vuln SLA written, dashboarded, exceptions tracked with expiry; CRA reporting lane (ENISA, 24h) wired for in-scope products.
 - [ ] EU CRA milestones (11 Sept 2026 reporting; 11 Dec 2027 main obligations) tracked on the compliance dashboard for products placed on the EU market.

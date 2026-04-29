@@ -143,7 +143,7 @@ image), deploy instances from it, roll forward by replacing instances rather
 than `ssh`-ing in to patch. This eliminates runtime drift and makes rollback a
 re-deploy of the previous artifact.
 - Sources: Fowler / Ben Butler-Cole, *ImmutableServer*, https://martinfowler.com/bliki/ImmutableServer.html ; Morris *IaC* (3rd ed), Ch. 11 & 13.
-- Concrete check: prod hosts in autoscaling/Kubernetes/serverless layers have no human SSH by default; deploys produce a new image tag rather than running `apt upgrade` on the existing fleet.
+- Concrete check: prod hosts in autoscaling/Kubernetes/serverless layers have no human SSH by default; deploys produce a new image tag rather than running `apt upgrade` on the existing fleet. (Standing engineer access to prod hosts — JIT elevation, PAM, session recording — is owned by [ch12 §7 Privileged access](./12-identity.md#7-privileged-access-pam--pim).)
 
 **[IMMUTABILITY] [prefer] "Cattle, not pets" — but understand what the metaphor does and does not mean.**
 The point of the cattle reframe (attributed to Bill Baker, popularised by
@@ -186,7 +186,7 @@ drift between code and host is reported continuously (see §3).
 ## 3. DRIFT
 
 **[DRIFT] [must] Drift is detected continuously, not "when something breaks".**
-Drift is inevitable: humans break-glass during incidents, providers change
+Drift is inevitable: humans break-glass during incidents (the break-glass identity itself, sealing, and use-monitoring are owned by [ch12 §8 Break-glass](./12-identity.md#8-break-glass)), providers change
 defaults, controllers in adjacent systems mutate tags, IAM gets "temporarily"
 widened. The question is how long it lives undetected. A scheduled `plan` in
 CI, or a GitOps controller reporting `OutOfSync`, surfaces drift in hours
@@ -419,7 +419,7 @@ that wrote the code. This is a strong default, not an absolute: regulated
 estates, 24×7 follow-the-sun coverage, and shared infra services
 legitimately split operational duties — the test is whether designers still
 receive production feedback fast and unfiltered.
-- Sources: Werner Vogels (interviewed by Jim Gray), *A Conversation with Werner Vogels*, ACM Queue, vol. 4, no. 4, June 2006 — the original "you build it, you run it" citation, https://queue.acm.org/detail.cfm?id=1142065 ; Google, *Site Reliability Engineering*, Ch. 1 *Introduction*, https://sre.google/sre-book/introduction/ ; Skelton & Pais, *Team Topologies*, IT Revolution 2019.
+- Sources: Werner Vogels (interviewed by Jim Gray), *A Conversation with Werner Vogels*, ACM Queue, vol. 4, no. 4, June 2006 — the original "you build it, you run it" citation, https://queue.acm.org/detail.cfm?id=1142065 ; Google, *Site Reliability Engineering*, Ch. 1 *Introduction*, https://sre.google/sre-book/introduction/ ; Skelton & Pais, *Team Topologies*, IT Revolution 2019 ; Forsgren, Humble & Kim, *Accelerate* (IT Revolution, 2018) and the DORA *Accelerate State of DevOps* research program — the empirical evidence linking team autonomy and end-to-end ownership to delivery + reliability performance, https://dora.dev/research/ .
 - Concrete check: the on-call rotation for service X is staffed by, or directly co-staffed with, the team that merges to service X's repo. If a different team owns the pager with no feedback path back to authors, you have ops, not DevOps.
 
 **[CULTURE] [should] Platform / SRE teams build paved roads, not gatekeeping queues.**

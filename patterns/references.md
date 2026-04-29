@@ -55,6 +55,9 @@ annotation lists the chapters that draw on each source.
 - **SLSA (Supply-chain Levels for Software Artifacts) v1.0 Specification**. [https://slsa.dev/spec/v1.0/](https://slsa.dev/spec/v1.0/). Cited in: ch. 06.
 - **SLSA Provenance v1.0**. [https://slsa.dev/spec/v1.0/provenance](https://slsa.dev/spec/v1.0/provenance). Cited in: ch. 03.
 - **SLSA — Supply-chain Levels for Software Artifacts (v1.0 spec, levels 1–4)**. [https://slsa.dev/spec/v1.0/levels](https://slsa.dev/spec/v1.0/levels). Cited in: ch. 03.
+- **CIS Benchmarks (catalog)** — Center for Internet Security. [https://www.cisecurity.org/cis-benchmarks](https://www.cisecurity.org/cis-benchmarks). Cited in: ch. 06.
+- **in-toto Attestation Framework** — Linux Foundation / CNCF. [https://in-toto.io/](https://in-toto.io/). Cited in: ch. 03, ch. 06.
+- **SLSA Specification v1.1**. [https://slsa.dev/spec/v1.1/](https://slsa.dev/spec/v1.1/). Cited in: ch. 03.
 - **SPDX specification (ISO/IEC 5962:2021)** — (2021). [https://spdx.dev/use/specifications/](https://spdx.dev/use/specifications/). Cited in: ch. 03.
 - **SPDX Specification 2.3 / 3.0**. [https://spdx.dev/specifications/](https://spdx.dev/specifications/). Cited in: ch. 06.
 - **Tekton Pipelines documentation**. [https://tekton.dev/docs/](https://tekton.dev/docs/). Cited in: ch. 03.
@@ -170,6 +173,8 @@ annotation lists the chapters that draw on each source.
 - **GitHub Actions — OIDC federation to cloud providers**. [https://docs.github.com/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect](https://docs.github.com/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect). Cited in: ch. 06.
 - **GKE Workload Identity**. [https://cloud.google.com/kubernetes-engine/docs/concepts/workload-identity](https://cloud.google.com/kubernetes-engine/docs/concepts/workload-identity). Cited in: ch. 06.
 - **Cloud SQL — Use point-in-time recovery (PITR)** — Google Cloud. [https://cloud.google.com/sql/docs/postgres/backup-recovery/pitr](https://cloud.google.com/sql/docs/postgres/backup-recovery/pitr). Cited in: ch. 08.
+- **Cloud SQL — Overview of high availability** — Google Cloud. [https://cloud.google.com/sql/docs/postgres/high-availability](https://cloud.google.com/sql/docs/postgres/high-availability). Cited in: ch. 08.
+- **AWS RDS — Security in Amazon RDS (shared responsibility)** — Amazon Web Services. [https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_GettingStarted.SecuringRDSResources.html](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_GettingStarted.SecuringRDSResources.html). Cited in: ch. 08.
 - **GCS Bucket Lock** — Google Cloud. [https://cloud.google.com/storage/docs/bucket-lock](https://cloud.google.com/storage/docs/bucket-lock). Cited in: ch. 08.
 - **Best practices for running cost-effective Kubernetes applications on GKE** — Google Cloud. [https://cloud.google.com/architecture/best-practices-for-running-cost-effective-kubernetes-applications-on-gke](https://cloud.google.com/architecture/best-practices-for-running-cost-effective-kubernetes-applications-on-gke). Cited in: ch. 10.
 - **Compute Engine cost optimization recommendations** — Google Cloud. [https://cloud.google.com/compute/docs/instances/apply-machine-type-recommendations-for-instances](https://cloud.google.com/compute/docs/instances/apply-machine-type-recommendations-for-instances). Cited in: ch. 10.

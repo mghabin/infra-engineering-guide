@@ -290,7 +290,10 @@ errors you need.
 The network is not the perimeter. Authenticate and authorize every request;
 mTLS service-to-service; identity-aware proxy in front of internal apps
 instead of a flat VPN; hardware-backed WebAuthn for human production
-access. Workloads on private subnets, no public IPs by default.
+access. Workloads on private subnets, no public IPs by default. (Workforce
+authenticator strength, AAL mapping, and IdP enrolment for the human side of
+this pattern are owned by [ch12 §3 Authentication strength](../docs/12-identity.md#3-authentication-strength) and
+[ch12 §4 Federation & SSO](../docs/12-identity.md#4-federation--sso).)
 - **When to use:** day one, before the VPN sprawls.
 - **Pitfalls:** treating "private subnet" as a security boundary; SMS or TOTP-only MFA on prod paths.
 - **See:** ch. 6, ch. 7; <https://research.google/pubs/pub43231/>, <https://csrc.nist.gov/publications/detail/sp/800-207/final>.
