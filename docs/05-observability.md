@@ -369,7 +369,7 @@ violation, provided each is actionable with a runbook:
   alert, anomalous auth, audit pipeline gap, key rotation overdue.
 - **Batch, pipelines, internal control planes** without continuous
   request traffic — job failure, SLA miss, dead-letter growth, backup
-  restore-test failure, CI/CD or IdP outage.
+  restore-test failure, CI/CD or IdP outage. (IdP outage is the canonical break-glass scenario — the bypass-federation identity that lets you sign in when the IdP is the incident is owned by [ch12 §8 Break-glass](./12-identity.md#8-break-glass).)
 
 ### 9b. Synthetic monitoring (zero-traffic gap)
 

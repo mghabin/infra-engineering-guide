@@ -23,6 +23,11 @@ running on whatever the SaaS sign-up wizard defaulted to.
 > replacement) stay in ch06 §13 — this chapter covers the *identity*
 > side of the same control. mTLS is ch07.
 
+> **Adjacent topics (owned elsewhere, cited here):**
+> - Workload (machine) identity — [ch06 §3 Workload identity](./06-security-supply-chain.md#3-workload-identity--the-no-static-credentials-rule).
+> - Audit log transport / retention pipeline — [ch06 §15 Compliance](./06-security-supply-chain.md#15-compliance--what-infra-actually-owns) (this chapter only specifies which identity signals must reach it; see §11).
+> - Platform team operating model and paved-road governance — [ch11 §16 Readiness](./11-platform-engineering.md#16-readiness).
+
 ---
 
 ## 1. WHO THIS CHAPTER IS FOR

@@ -294,7 +294,7 @@ The PR is the apply gate. Treat it that way.
 **Must — every change produces a `plan` artifact that the apply step consumes; the *summary* is posted to the PR, the full plan lives in the access-controlled CI store.** Posting raw plans into the PR conversation conflicts with §8 (sensitive values, resource IDs, IAM principals). Right pattern: redacted summary on the PR (resource counts, change types, flagged resources, policy results); full `plan.out` + `terraform show -json` artifact in the CI run, accessible only to the apply role and reviewers with the same scope. Atlantis, Spacelift, env0, and TFC all support this split; roll-your-own GitHub Actions need to opt in. The apply step must consume the *exact* plan artifact from the same run, never re-plan.
 - Sources: HashiCorp, *Saved plans (`-out`)*, https://developer.hashicorp.com/terraform/cli/commands/plan#out-filename ; HashiCorp, *Sensitive input variables* (above).
 
-**Should — apply runs from CI against the merged commit, not from a laptop.** Local apply means local credentials, local CLI versions, local lock contention, no audit trail. Break-glass local apply must be loud (logged, paged) and rare.
+**Should — apply runs from CI against the merged commit, not from a laptop.** Local apply means local credentials, local CLI versions, local lock contention, no audit trail. Break-glass local apply must be loud (logged, paged) and rare. (Break-glass identity, multi-party check-out, and post-use rotation are owned by [ch12 §8 Break-glass](./12-identity.md#8-break-glass).)
 
 **Should — two-person rule on prod apply.** PR approval + apply approval, by different people. TFC/Spacelift/env0 support this natively; with Atlantis or custom actions, gate on a second `/approve` from a non-author.
 
