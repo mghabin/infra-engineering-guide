@@ -104,6 +104,11 @@ Platform engineering is net-positive only when it is also net-unblocking.
   - Sources: CNCF Platforms WG whitepaper, §"Attributes of a platform"; Fournier, *Platform Engineering*, Ch. 1 & 4; Salatino, *Platform Engineering on Kubernetes* (Manning, 2023), Ch. 1–2; internaldeveloperplatform.org, *What is an IDP?*, https://internaldeveloperplatform.org/what-is-an-internal-developer-platform/ .
   - Concrete check: list the top five user journeys (provision env, deploy app, rotate secret, request resource, view logs). For each, can the developer self-serve end-to-end without human intervention? Each "no" is a gap. Then map each journey to one of the five IDP components — gaps tend to cluster in Application Configuration or Environment Management.
 
+- **[IDP] [should] Build or adopt an IDP only at one of three concrete triggers: ≥ 30 services in production, ≥ 4 stream-aligned teams sharing infra, or ≥ 6 months of repeatedly-cited friction in the developer journey (recurring postmortem actions, DevEx survey regressions, or paved-road bypass rate > 30%). Below all three, the right answer is paved-road shell scripts plus README templates plus a shared module repo.**
+  - These are the smallest numbers at which the Humanitec / CNCF IDP component model starts to amortise: under ~30 services a single engineer can hold the topology in their head; under 4 stream-aligned teams the X-as-a-Service interaction mode (ch11 §10) does not yet have enough consumers to justify a product team; under 6 months of demonstrated friction you have not falsified the cheaper hypothesis ("better docs and a Makefile would fix this"). The Humanitec *Benchmarking Study / State of Platform Engineering* and the CNCF Platforms WG maturity model both place the inflection in this range; Puppet's *State of Platform Engineering 2024* finds the highest ROI in orgs that crossed these bars *before* tooling investment, not after.
+  - Sources: Humanitec, *State of Platform Engineering* / *Platform Engineering Benchmarking Study*, https://humanitec.com/state-of-platform-engineering ; Puppet, *2024 State of Platform Engineering Report*, https://www.puppet.com/resources/state-of-platform-engineering ; CNCF Platforms WG, *Platform Engineering Maturity Model*, https://tag-app-delivery.cncf.io/whitepapers/platform-eng-maturity-model/ ; Skelton & Pais, *Team Topologies* 2nd ed., Ch. 5.
+  - Concrete check: write the trigger that fired (which threshold, with the number) into the platform charter ADR. If none of the three is met, the charter is premature — defer and revisit at the next planning cycle.
+
 ---
 
 ## 6. SURFACE STRATEGY & VERSIONING
@@ -164,6 +169,11 @@ Platform engineering is net-positive only when it is also net-unblocking.
   - Sources: Backstage docs — *Permissions overview*, https://backstage.io/docs/permissions/overview/ ; Backstage release-versions, https://backstage.io/docs/overview/release-versions .
   - Concrete check: in the deployed Backstage instance, attempt to invoke a scaffolder template or read a sensitive catalog entity as an unauthenticated user (or as a user with no team membership). If either succeeds, the permission framework is not configured. Cross-link with ch07 mTLS and ch06 supply-chain controls — Backstage scaffolder actions can mint new repos and CI configurations; treat them as privileged.
 
+- **[BACKSTAGE] [should] Adopt Backstage only when *all three* of its core surfaces are needed: a software catalog with ≥ 30 owned entities, a TechDocs surface (Markdown-in-repo rendered centrally), and a Scaffolder generating new repos/services from templates. If you need only one or two, you are over-engineering — a `services.yaml` plus a docs site plus `cookiecutter`/`copier` templates is cheaper and easier to keep alive.**
+  - Backstage's run cost (a TypeScript app with auth, plugin upgrades, catalog ingestion, Postgres, deployment) only pays back when all three surfaces are in steady use. The 30-entity bar comes from the same "single engineer can no longer enumerate services from memory" inflection cited above and matches what the Backstage maintainers and Spotify Portal pricing tiers treat as the smallest reasonable deployment. ThoughtWorks Tech Radar has held Backstage in *Trial* for several editions specifically because organisations adopt it for one surface and then carry the cost of the other two.
+  - Sources: Backstage docs, https://backstage.io/docs/overview/what-is-backstage ; Spotify Portal, https://backstage.spotify.com/ ; ThoughtWorks Tech Radar, *Backstage*, https://www.thoughtworks.com/radar/platforms/backstage ; Humanitec, *State of Platform Engineering*, https://humanitec.com/state-of-platform-engineering .
+  - Concrete check: count owned catalog entities, count TechDocs entries, count active scaffolder templates. If any of the three is under its threshold (30 / present / present), defer Backstage and ship the cheaper substitute.
+
 - **[BACKSTAGE] [avoid] Adopting Backstage when the run-cost dominates the benefit, or treating it as the platform itself rather than a frontend to a platform.**
   - Backstage is a TypeScript application your team will own (auth, plugin upgrades, catalog ingestion, database, deployment). If you cannot fund that ownership, a managed alternative — **Spotify Portal for Backstage** (the first-party hosted offering, with optional premium plugins: Soundcheck, AiKA, RBAC, Insights, Skill Exchange), Roadie, Port, Cortex, OpsLevel, Compass, Humanitec — or a single README per service plus a shared module repo is the right answer.
   - Sources: ThoughtWorks Tech Radar, *Backstage* (cautions on adoption cost); Fournier, *Platform Engineering*, Ch. 5; Spotify Portal landing page, https://backstage.spotify.com/ ; Roadie, *Should you adopt Backstage?*, https://roadie.io/blog/ .
@@ -184,8 +194,8 @@ Platform engineering is net-positive only when it is also net-unblocking.
 | Heavy regulated/compliance estate, non-K8s | API gateway / service catalog pattern over CRD-based platform |
 | Sustained funding for ≥1 dedicated platform PM-plus-engineers | Build/adopt is on the table |
 
-- These are heuristics, not thresholds. Earlier guidance ("~50 engineers, ~30 services") is a *signal* that complexity is approaching the inflection point — not a gate. Some 20-engineer fintechs need a platform on day one because of compliance; some 200-engineer agencies never do because their workloads are uniform.
-- Sources: Larson, *An Elegant Puzzle*, §"Sizing engineering teams" and §"Internal tools"; Fournier, *Platform Engineering*, Ch. 1 ("When you don't need a platform team") and Ch. 5; CNCF Platforms WG whitepaper, §"Maturity model".
+- **The thresholds in §5 (≥ 30 services / ≥ 4 stream-aligned teams / ≥ 6 months demonstrated friction) and §9 (catalog ≥ 30 entities + TechDocs + Scaffolder, all three) are the defaults. Override them only with a written ADR naming the regulated/compliance, M&A-roll-up, or uniform-workload reason; "we feel ready" is not such a reason.** Some 20-engineer fintechs *do* need a platform on day one because a regulator says so; some 200-engineer agencies never do because their workloads are uniform — those are the documented exceptions, not the rule.
+- Sources: Larson, *An Elegant Puzzle*, §"Sizing engineering teams" and §"Internal tools"; Fournier, *Platform Engineering*, Ch. 1 ("When you don't need a platform team") and Ch. 5; CNCF Platforms WG whitepaper, §"Maturity model"; Humanitec, *State of Platform Engineering*; Puppet, *2024 State of Platform Engineering Report*.
 
 ---
 
@@ -272,13 +282,13 @@ Platform engineering is net-positive only when it is also net-unblocking.
 
 - **[READINESS] [must] Charter a platform team only when the criteria are met, not at a fixed headcount.**
   - Criteria (all four, not any one):
-    - Repeated toil: at least three stream-aligned teams suffer the same shared-infra pain.
-    - Demonstrated demand: those teams have signed up to adopt the first capability.
-    - Sustained funding: ≥2 engineers plus PM-equivalent capacity for at least a year, not borrowed time.
+    - Repeated toil: at least **4 stream-aligned teams** suffer the same shared-infra pain.
+    - Demonstrated demand: those teams have signed up to adopt the first capability *and* there is a recurring funded backlog of cross-team enablement work (≥ 1 quarter visible).
+    - Sustained funding: ≥ 2 engineers plus PM-equivalent capacity for at least a year, not borrowed time.
     - Complexity worth amortising: the abstraction saves more team-hours per quarter than it costs to maintain.
-  - Engineer-count or service-count thresholds (the often-cited "~30 engineers / ~10 services") are *signals* that these criteria are likely to be met — not gates. Some compliance-heavy 20-engineer orgs need a platform on day one; some 200-engineer orgs with uniform workloads never do.
-  - Sources: Larson, *An Elegant Puzzle*, §"Sizing engineering teams"; Fournier, *Platform Engineering*, Ch. 1 ("When you don't need a platform team"); Skelton & Pais, *Team Topologies* 2nd ed., Ch. 5.
-  - Concrete check: before chartering, write the "what duplication is this avoiding, who has signed up, how is it funded?" memo. If any of the four criteria is missing, defer.
+  - Below all four, **embed platform engineers part-time into stream-aligned teams** — do not stand up a separate team. The 4-team / funded-backlog bar tracks Team Topologies' guidance that platform = X-as-a-Service requires enough consumers to justify the team interface, and Humanitec / Puppet platform-engineering surveys both find premature platform teams (≤ 3 consumer teams, no committed backlog) regress on DORA delivery metrics within 12 months.
+  - Sources: Skelton & Pais, *Team Topologies* 2nd ed., Ch. 5 (esp. "When to form a platform team"); Larson, *An Elegant Puzzle*, §"Sizing engineering teams"; Fournier, *Platform Engineering*, Ch. 1 ("When you don't need a platform team"); Humanitec, *State of Platform Engineering*, https://humanitec.com/state-of-platform-engineering ; Puppet, *2024 State of Platform Engineering Report*, https://www.puppet.com/resources/state-of-platform-engineering ; Gartner, *Hype Cycle for Platform Engineering* (2024), https://www.gartner.com/en/documents/5571295 .
+  - Concrete check: before chartering, write the "which 4+ teams, what funded backlog, how is it staffed for ≥ 1 year?" memo. If any of the four criteria is missing, embed part-time and defer the team charter to next planning cycle.
 
 ---
 

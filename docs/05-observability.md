@@ -310,13 +310,11 @@ cannot enforce cardinality. Do this at runtime:
 | Wide events | — | ClickHouse (SigNoz, Highlight) | Honeycomb |
 | Profiles | Pyroscope / Parca | Pyroscope + S3 | Polar Signals, Grafana Cloud |
 
-- **Vendor vs OSS:** **OSS LGTM** — control, lower unit cost at scale,
-  you operate it; reasonable from ~50 engineers + a platform team.
-  **Honeycomb** — best-in-class wide-event/high-cardinality query.
-  **Datadog / New Relic / Dynatrace** — turnkey, expensive; right when
-  time-to-first-signal beats unit cost. **ClickHouse-based stacks
-  (SigNoz, Highlight, Uptrace)** — OTLP-native, one store for
-  logs/metrics/traces, much cheaper than ELK at log scale.
+- **Backend choice — pick the default for your shape, don't shop the matrix every quarter.** Instrumentation stays OTel either way, so a backend swap is mechanical rewiring of exporters, not a re-instrumentation project ([OpenTelemetry — vendor-neutral, portable telemetry](https://opentelemetry.io/docs/what-is-opentelemetry/)).
+  - **< 50 engineers, no platform team, fast-moving:** standardize on a single managed SaaS — **Datadog**, **Honeycomb**, **Grafana Cloud**, or **New Relic** — and accept ~2 years of lock-in. Time-to-insight dominates unit cost at this size; running Mimir/Loki/Tempo yourself is a second product you can't afford. ([Datadog pricing](https://www.datadoghq.com/pricing/); [Honeycomb on the real cost of observability](https://www.honeycomb.io/blog/cost-complexity-observability-2-0); [Grafana Cloud pricing](https://grafana.com/pricing/)).
+  - **50–500 engineers, platform team exists:** managed SaaS for **traces + RUM** (where vendor query UX and session replay still beat OSS), OSS **Grafana stack (Mimir / Loki / Tempo)** for **metrics + logs** *if* the platform team has the on-call capacity to run it; otherwise stay all-SaaS. The split is justified only when the OSS unit-cost win clears the platform-team payroll ([Mimir sizing & operations](https://grafana.com/docs/mimir/latest/manage/run-production-environment/planning-capacity/); [Loki sizing](https://grafana.com/docs/loki/latest/setup/size/)).
+  - **500+ engineers, regulated or cost-pressured:** OSS **Grafana stack (Mimir / Loki / Tempo)** or **Elastic / OpenSearch** in-house, with FinOps governance on telemetry spend (ch10). Accept the platform-team cost; at this scale SaaS list-price scales worse than headcount ([Honeycomb — observability TCO](https://www.honeycomb.io/blog/cost-complexity-observability-2-0); [Grafana Mimir architecture](https://grafana.com/docs/mimir/latest/references/architecture/)).
+  - **In all three shapes:** keep instrumentation on OTel SDKs/Collector, keep dashboards/alerts in code (Grafana JSON / Jsonnet / Terraform), prefer query languages with multiple implementations (PromQL, LogQL). Then a backend swap costs weeks, not quarters.
 
 ---
 

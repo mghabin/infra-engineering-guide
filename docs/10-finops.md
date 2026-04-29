@@ -136,11 +136,11 @@ most expensive FinOps mistake.
 | CloudHealth (VMware) | Multi-cloud | Daily | Medium (via OpenCost-style integrations) | Mature shared-cost & chargeback | Yes | Commercial; enterprise effort |
 | CloudZero / Vantage | Multi-cloud + SaaS, unit-economics focus | Hours | Medium (Kubecost integration) | Per-customer/feature allocation | Yes | SaaS, integration effort |
 
-- **Do** pick by the question you must answer monthly (K8s namespace
-  attribution → OpenCost/Kubecost; per-customer unit cost → CloudZero or a
-  warehouse model; enterprise governance → CloudHealth). The OpenCost
-  plugin framework is now the obvious instrument for **AI/SaaS cost**
-  allocation alongside K8s. Do not stack three overlapping tools.
+- **Default tooling stack — pick by org shape, don't accumulate.** The FinOps Foundation's *State of FinOps 2025* shows tool sprawl (3+ overlapping cost tools) is now one of the top-cited reasons FinOps programs stall; pick a default and justify any addition ([State of FinOps 2025](https://data.finops.org/)).
+  - **Single cloud, < 100 engineers:** native cost tools only — **AWS Cost Explorer + Cost Anomaly Detection**, **Azure Cost Management**, or **GCP Billing / Recommender** — plus tagging discipline (§3 above). Don't buy a third-party cost tool; the spend exceeds the savings at this size.
+  - **Single cloud, 100–500 engineers, platform team exists:** native + **OpenCost** for K8s allocation (CNCF **Incubating** since Oct 2024 — [opencost.io](https://opencost.io/)) + a single CSP-native budget/forecast workflow (AWS Budgets, Azure Budgets, or GCP Billing Budgets). Still no third-party SaaS unless K8s namespace attribution genuinely fails.
+  - **Multi-cloud OR > 500 engineers OR active M&A roll-up:** **FOCUS-spec-aligned** third-party — **Vantage**, **CloudZero**, **Apptio Cloudability**, or **Finout** — *plus* native dashboards *plus* OpenCost. The third-party spend is justified by the cross-cloud allocation and unit-economics work the natives can't do; require a written ROI memo before signing ([FOCUS specification](https://focus.finops.org/), now FOCUS 1.2 with multi-cloud + SaaS/AI generators).
+  - **Pick by the question you must answer monthly** (K8s namespace attribution → OpenCost; per-customer unit cost → CloudZero or a warehouse model; enterprise multi-cloud governance → Cloudability/CloudHealth). Do not stack three overlapping tools — kill the older one when adding the newer.
 
 ---
 
