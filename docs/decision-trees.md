@@ -1,5 +1,7 @@
 # Decision Trees — One-Hour Synthesis
 
+This file summarises and routes; canonical wording lives in `docs/<NN>-*.md`. Where this file and a chapter disagree, the chapter wins.
+
 This page is the "if you only have one hour with the guide, read this" index.
 It compresses the eleven chapters into the decisions whose cost of reversal
 is highest, then gives a tree per recurring scenario. Every node cites the
@@ -168,30 +170,40 @@ networking decisions that belong in the VPC and CNI.
 
 ## 5. Decision: build a platform team / IDP?
 
-`ch11 §16` is explicit: charter on **criteria, not headcount**. Reframed as
-a tree:
+`ch11 §16 → Platform readiness matrix (heuristic)` is the canonical
+wording. The tree below mirrors the matrix's four rows in order. The
+thresholds it cites are **heuristic anchors from
+`docs/11-platform-engineering.md` — see the readiness matrix for the
+canonical wording**. Apply the rows in order: embed before IDP, IDP
+before Backstage, Backstage before chartering a team.
 
 ```mermaid
 flowchart TD
-    A[Pressure to "build a platform"] --> B{Repeated toil:<br/>≥3 stream-aligned teams<br/>suffer the same shared-infra pain?}
-    B -->|No| Z1[Defer. Fix it in<br/>the loudest team first — ch11 §16]
-    B -->|Yes| C{Demonstrated demand:<br/>those teams have signed up<br/>to adopt the first capability?}
-    C -->|No| Z2[Defer. "If you build it<br/>they will come" is an anti-pattern — ch11 §13]
-    C -->|Yes| D{Sustained funding:<br/>≥2 engineers + PM-equivalent<br/>for ≥1 year, not borrowed?}
-    D -->|No| Z3[Defer. Part-time platform<br/>is worse than no platform — ch11 §16]
-    D -->|Yes| E{Complexity worth amortising:<br/>abstraction saves more team-hours/qtr<br/>than it costs to maintain?}
-    E -->|No| Z4[Defer. Document the pattern<br/>as a paved path instead — ch11 §4]
-    E -->|Yes| F[Charter the team.<br/>Write the memo first — ch11 §16]
+    A[Pressure to "build a platform"] --> B{Row a — embed?<br/>≥1 stream-aligned team<br/>repeatedly blocked on<br/>shared-infra toil?}
+    B -->|No| Z0[Defer entirely.<br/>Coach the loudest team — ch11 §16]
+    B -->|Yes| BE[Embed part-time platform engineers<br/>into stream-aligned teams<br/>— ch11 §16 row a]
 
-    F --> G{Need an IDP UI?}
-    G -->|Golden paths fit in<br/>a CLI + repo template| H[Skip Backstage<br/>start with templates — ch11 §9]
-    G -->|>5 capabilities,<br/>>3 audiences, discovery problem real| I[Adopt IDP — ch11 §5, §9]
+    BE --> C{Row b — IDP / golden paths?<br/>≥3 stream-aligned teams<br/>+ repeated paved-road requests<br/>for the same capability?}
+    C -->|No| Z1[Stay embedded.<br/>Ship shell scripts + README templates<br/>+ shared module repo — ch11 §5, §16 row b]
+    C -->|Yes| C2{Has at least one consumer team<br/>signed up to adopt the<br/>first paved road?}
+    C2 -->|No| Z2["If you build it they will come"<br/>is an anti-pattern — ch11 §13]
+    C2 -->|Yes| CI[Adopt curated IDP / golden paths<br/>— ch11 §5, §16 row b]
+
+    CI --> D{Row c — Backstage / catalog?<br/>Discovery is the bottleneck<br/>AND all 3 surfaces<br/>catalog + TechDocs + Scaffolder<br/>will be used?}
+    D -->|No| Z3[Skip Backstage.<br/>services.yaml + docs site +<br/>cookiecutter/copier — ch11 §9, §16 row c]
+    D -->|Yes| D2{Funded owner for the TS app,<br/>plugin upgrades, auth,<br/>catalog ingestion, Postgres?}
+    D2 -->|No| Z4[Use a managed alternative<br/>Spotify Portal / Roadie / Port /<br/>Cortex / OpsLevel / Compass — ch11 §9]
+    D2 -->|Yes| DI[Deploy Backstage<br/>permission framework on first<br/>— ch11 §9, §16 row c]
+
+    DI --> E{Row d — charter a team?<br/>ALL FOUR hold:<br/>≥4 teams sharing pain,<br/>funded backlog ≥1 quarter,<br/>≥2 eng + PM for ≥1 year,<br/>complexity worth amortising?}
+    E -->|Any missing| Z5[Stay embedded per row a.<br/>Defer charter to next planning<br/>cycle — ch11 §16 row d]
+    E -->|All four| F[Charter the team.<br/>Write the memo first — ch11 §16 row d]
 ```
 
-Engineer-count thresholds (`~30 engineers / ~10 services`) are signals,
-not gates (`ch11 §16`). Some compliance-heavy 20-engineer orgs need a
-platform on day one; some 200-engineer orgs with uniform workloads never
-do.
+The matrix in `ch11 §16` is the source of truth. The numbers above are
+heuristic anchors, not standards; an organisation that crosses a row
+earlier or later for a defended reason records that reason in the
+platform charter ADR (`ch11 §16`).
 
 ---
 
@@ -245,15 +257,20 @@ moving usually exceeds three years of the savings.
 
 ## 7. Decision: how to ship a change safely?
 
-The canonical pipeline. Each arrow is a contract; if any link is missing
-or unsigned, the chain breaks (`ch03 §3`, `ch06 §9–11`).
+The tree forks first on **estate type**. The container/K8s pipeline is
+the canonical one (`ch03 §3`, `ch06 §9–11`); serverless and IaC-only
+estates have their own arrows but the same contracts: a hash-pinned
+artefact, signed/attested provenance, env promotion by version not by
+mutation, and an automated rollback or revert.
 
 ```mermaid
 flowchart TD
     A[Branch from main] --> B[CI on PR:<br/>lint, unit, IaC plan, SBOM diff — ch03 §1, ch02 §10]
     B --> C[Policy gate:<br/>OPA/Conftest, image policy,<br/>required-checks ruleset — ch03 §5, ch06 §4]
     C --> D[Merge to main]
-    D --> E[Build image in hermetic runner<br/>OIDC to registry, no static creds — ch03 §3.4, §4.2]
+    D --> ET{Estate type?}
+
+    ET -->|Containers / K8s| E[Build image in hermetic runner<br/>OIDC to registry, no static creds — ch03 §3.4, §4.2]
     E --> F[Generate SBOM<br/>+ SLSA provenance attestation — ch03 §3.1–3.2, ch06 §7, §9]
     F --> G[Sign image<br/>cosign keyless or KMS — ch03 §3.3, ch06 §10]
     G --> H[Push by digest to registry<br/>promote across envs by digest, not tag — ch03 §3.4, ch04 §3]
@@ -268,16 +285,35 @@ flowchart TD
     N --> O
     O -->|No| P[Auto-rollback to previous digest — ch09 §9, ch03 §7]
     O -->|Yes| Q[Promote to 100%]
-    Q --> R[Record DORA + change-fail rate — ch03 §8]
+
+    ET -->|Serverless<br/>Functions / Lambda /<br/>Cloud Run / Container Apps| SA[Build artefact<br/>record content hash<br/>OIDC to deploy target — ch03 §4.2]
+    SA --> SB[Generate SBOM<br/>+ CI provenance attestation<br/>cosign attest on the artefact<br/>— ch03 §3.1–3.2, ch06 §7, §9]
+    SB --> SC[Publish version / revision<br/>immutable, content-addressed<br/>— ch03 §3.4, ch09 §9]
+    SC --> SD[Promote across envs<br/>by version / alias, never mutate<br/>prod-staging-dev share artefact<br/>— ch01 §6]
+    SD --> SE[Progressive rollout via traffic split<br/>weighted alias / revision split<br/>auto-rollback on SLI burn<br/>— ch03 §7, ch09 §9.1]
+    SE --> Q
+
+    ET -->|IaC-only<br/>no app deploy| IA[Plan-on-PR<br/>attach plan artefact<br/>treat as secret-bearing — ch02 §10]
+    IA --> IB[Required review:<br/>reviewer approves the plan,<br/>not just the diff — ch02 §10, ch03 §5]
+    IB --> IC[Apply gated by CI<br/>OIDC to cloud, no static creds<br/>state-locked, single CLI per state file<br/>— ch02 §4, ch03 §4.2]
+    IC --> ID[Drift detection on cadence<br/>plan diff alerts on out-of-band change<br/>— ch01 §6, ch02 §4]
+    ID --> Q
+
+    Q --> R[Record DORA + change-fail rate — ch03 §8, ch11 §14]
 ```
 
-Two contracts that are non-negotiable:
+Two contracts that are non-negotiable across all three estates:
 
-- **Promote by digest, never by tag.** Tags are mutable; digests are not
-  (`ch03 §3.4`, `ch04 §3`).
-- **Admission verifies signature *and* provenance.** A signed image with no
-  provenance only proves "someone signed it", not "your pipeline built it"
-  (`ch06 §11`).
+- **Promote by content-addressed identity, never by mutable name.**
+  Container images: digest, never tag (`ch03 §3.4`, `ch04 §3`).
+  Serverless: version/revision, never the floating alias as the source
+  of truth (`ch03 §3.4`). IaC: plan + state, never an out-of-band
+  apply (`ch02 §4`, `ch02 §10`).
+- **Verify provenance, not just signature.** Containers: admission
+  checks signature *and* SLSA provenance (`ch06 §11`). Serverless:
+  deploy target verifies the cosign attestation on the artefact before
+  promotion (`ch06 §9`). IaC: CI provenance is part of the apply
+  audit trail (`ch02 §9a`, `ch03 §3.1–3.2`).
 
 ---
 
@@ -481,11 +517,11 @@ flowchart TD
     B -->|M&A holding /<br/>federation of orgs<br/>with separate HR| F[Federated multi-IdP<br/>hub IdP + downstream trusts<br/>SCIM out of the hub — ch12 §2]
     B -->|Independent product BUs<br/>customer identity ≠ workforce| G{Customer identity<br/>or workforce identity?}
 
-    C -->|Mostly employees,<br/>uniform device posture| D{Vendor SaaS coverage:<br/>do critical SaaS support<br/>SAML/OIDC + SCIM<br/>from your candidate IdP?}
+    C -->|Mostly employees,<br/>uniform device posture| D{Vendor SaaS coverage:<br/>do tier-0 / production-critical SaaS<br/>support SAML/OIDC + SCIM<br/>from your candidate IdP?<br/>see ch12 §4 for tier-0 definition}
     C -->|Heavy contractor /<br/>partner population| E[Single corp IdP for employees<br/>+ B2B / guest tenant<br/>for contractors — ch12 §2, §4]
 
-    D -->|Yes, ≥95%| D1{Conditional access<br/>requirements?<br/>device posture, risk-based,<br/>per-app step-up}
-    D -->|No, long tail of<br/>SAML-but-no-SCIM SaaS| D2[Single corp IdP<br/>+ IGA / SCIM bridge<br/>Okta Lifecycle, Entra Governance — ch12 §3]
+    D -->|All tier-0 / production-critical<br/>systems support SAML or OIDC + SCIM| D1{Conditional access<br/>requirements?<br/>device posture, risk-based,<br/>per-app step-up}
+    D -->|Some tier-0 systems lack<br/>SAML/SCIM<br/>(local creds, proprietary federation)| D2[Single corp IdP<br/>+ IGA / SCIM bridge for the gaps<br/>Okta Lifecycle, Entra Governance — ch12 §3, §10]
 
     D1 -->|Yes| D3[Single corp IdP with CA engine<br/>Entra ID CA / Okta Adaptive — ch12 §3]
     D1 -->|No, MFA + SSO is enough| D4[Single corp IdP, baseline MFA — ch12 §1]
@@ -532,7 +568,7 @@ Read in the listed order. Stop when the immediate problem is solved.
 | Cost is suddenly out of control | `ch10 §3` (visibility before optimisation) → `ch10 §12` (anomaly detection) → `ch10 §8` (egress audit) → `ch10 §5,6,7` (rightsize, scale-to-zero, spot) → `ch10 §4` (budgets + burn-rate) → `ch10 §13` (commitments only after baseline is clear) |
 | Supply-chain incident in the news | `ch06 §18` (lessons) → `ch06 §6` (package ingestion controls) → `ch03 §4.1,4.5` (pinned actions, xz lesson) → `ch06 §7,9,10,11` (SBOM, SLSA, sign, verify) → `ch06 §17` (shift left *and* everywhere) |
 | Data tier choice (new service) | tree §10 (family first) → `ch08 §1` (managed vs self-hosted) → `ch08 §4` (RPO/RTO tier) → `ch08 §5` (HA topology) → `ch08 §10,15` (schema evolution + migration as deploy) → `ch08 §2,3` (backups, restore drills) → `ch08 §16` (encryption) |
-| New multi-tenant B2B service | tree §11 (tenancy model) → `ch08 §7` (blast radius) → `ch06 §3` (workload identity per tenant) → `ch10 §11` (per-tenant cost allocation) → `ch08 §15` (promotion migrations) → `ch09 §1.2` (per-tenant SLOs vs global) |
+| New multi-tenant B2B service | tree §11 (tenancy model — pooled vs silo) → `ch08 §7` (data-tier blast radius), `ch04 §13` (in-cluster tenancy: namespaces vs clusters), `ch07 §6,8` (per-tenant network isolation, egress) for **isolation**; `ch12 §6–7` (human admin access into tenant data, JIT elevation) and `ch06 §3` ONLY for **workload-to-workload auth between tenant services** (not human auth, not isolation) → `ch10 §11` (per-tenant cost allocation) → `ch08 §15` (promotion migrations) → `ch09 §1.2` (per-tenant SLOs vs global) |
 | Standing up corp identity / IdP migration | tree §12 (model) → `ch12 §1–3` (IdP, federation, IGA/SCIM) → `ch06 §3` (workload identity is separate) → `ch12 §5` (CIAM split) → `ch01 §6` (account topology bound to IdP groups) |
 
 ---
