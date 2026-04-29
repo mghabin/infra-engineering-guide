@@ -36,7 +36,7 @@ One page. Pull this up during infra/platform reviews. Every item is a `must`-sev
 - [ ] Reference container images by digest (`@sha256:…`) in the env repo, never by mutable tag. → [ch. 03](docs/03-ci-cd.md)
 - [ ] Ship every release artifact with a signed SLSA provenance attestation at the level defined in ch06 §9 (currently L3 for production artifacts). → [ch. 03](docs/03-ci-cd.md), [ch. 06 §9](docs/06-security-supply-chain.md)
 - [ ] Generate an SBOM at build time for every image and release binary; store as an OCI referrer. → [ch. 03](docs/03-ci-cd.md)
-- [ ] Sign every container and release artifact with cosign keyless using the CI's OIDC identity. → [ch. 03](docs/03-ci-cd.md)
+- [ ] Sign every container and release artifact with cosign — **keyless** (default) or **KMS/HSM-backed** for FIPS / private / air-gapped per ch03 §3.3 and ch06 §10. → [ch. 03](docs/03-ci-cd.md), [ch. 06 §10](docs/06-security-supply-chain.md)
 - [ ] Verify signatures at admission in the cluster (policy-controller, Kyverno, Ratify, Connaisseur), not only in CI. → [ch. 03](docs/03-ci-cd.md)
 - [ ] Pin every third-party action to a 40-char commit SHA; tags are mutable. → [ch. 03](docs/03-ci-cd.md)
 - [ ] Federate cloud auth via OIDC scoped to repo + workflow + branch/environment; no long-lived cloud creds in CI. → [ch. 03](docs/03-ci-cd.md)
@@ -112,7 +112,7 @@ One page. Pull this up during infra/platform reviews. Every item is a `must`-sev
 
 - [ ] Know the AWS/Azure/GCP primitive mapping cold; subnet scope and VPC scope drive every topology decision. → [ch. 07](docs/07-networking.md)
 - [ ] Allocate /16 per VPC with /24 subnets from a written central IPAM plan; never overlap CIDRs across anything that might one day connect. → [ch. 07](docs/07-networking.md)
-- [ ] Adopt a Landing Zone model (CAF / AWS Control Tower) from day one; central connectivity account owns the hub. → [ch. 07](docs/07-networking.md)
+- [ ] Adopt the relevant landing-zone scaffold (CAF / AWS Control Tower) once you cross the Stage 2/3 triggers in ch07 §3 — **not** day one for single-VPC / single-team estates. → [ch. 07 §3](docs/07-networking.md)
 - [ ] Use hub-and-spoke via Transit Gateway / Virtual WAN / NCC beyond ~5 VPCs; never grow a mesh-peering topology. → [ch. 07](docs/07-networking.md)
 - [ ] Terminate every supported PaaS over PrivateLink / Private Endpoint / PSC; disable the public endpoint. → [ch. 07](docs/07-networking.md)
 - [ ] Run split-horizon DNS with private zones centralized in the hub; spokes use conditional forwarding. → [ch. 07](docs/07-networking.md)

@@ -139,11 +139,14 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
   - **Source L1** — version control with retained history.
   - **Source L2** — change history is authenticated to a verified contributor identity (signed commits or platform-verified author identity).
   - **Source L3** — every change is **reviewed by a second authorised party** before merge, branch-protection prevents history rewrites, **release tags are protected and signed**, **binary artifacts in source are policy-controlled** (no opaque blobs land in the tree without justification), and the source-control system itself is assessed against the spec's organisational requirements (retained logs, two-person admin actions, separation between source-control admin and signing-key custody).
-- **Canonical (ch06):** ch06 owns the SLSA-L3 floor for production artifacts.
-  Build L3 + Source L3 is the target; Build L1/L2 and Source L1/L2 are the
-  permitted ramp for non-prod and pre-platform repos. ch03 (CI/CD) implements
-  the build-side mechanics and §3 of that chapter cites this floor rather than
-  re-deciding it.
+- **Canonical (ch06):** ch06 owns the SLSA floor for production artifacts.
+  **Build L3 + Source L3 is the target for high-risk / regulated production
+  workloads** (per `slsa.dev/spec/v1.2/levels`); **Build L2 + Source L2** is
+  a defensible interim for lower-stakes contexts (internal-only,
+  pre-revenue, experimental) on a documented ramp to L3. Build L1 / Source
+  L1 are the permitted entry point for new repos and pre-platform work.
+  ch03 (CI/CD) implements the build-side mechanics and §3 of that chapter
+  cites this floor rather than re-deciding it.
 - **Do** target **Build L3** for production artifacts. Three production paths meet the L3 properties on hosted platforms:
   - **GitHub Artifact Attestations** (GA 25 June 2024) — `actions/attest-build-provenance` and `actions/attest-sbom` produce SLSA v1 provenance signed via Sigstore (public-good for public repos, GitHub's private Sigstore for private repos), verifiable with `gh attestation verify -R <org>/<repo>` (works offline / air-gap once the bundle is downloaded). Lowest-friction default for most teams: one workflow YAML block, no reusable-workflow plumbing.
   - **`slsa-github-generator`** reusable workflows — predates Artifact Attestations; still the right answer when you need predicate types or builder behaviours not yet covered by the first-party action.
@@ -226,7 +229,7 @@ Opinionated, cloud-agnostic defaults for securing infrastructure and the softwar
 ## 13. Access — IAP > VPN
 
 - **Do** front internal apps with an **identity-aware proxy** instead of a flat VPN. Cloudflare Access, Google IAP, Pomerium, and Tailscale enforce per-request identity + device posture; a VPN gives the laptop the network, then trusts everything on it. **Teleport** is the right answer for SSH/Kubernetes/DB with session recording and short-lived certs — `~/.ssh/authorized_keys` on prod hosts is a finding.
-- **Do** require hardware-backed WebAuthn (YubiKey, platform authenticator) for all human access to production. NIST SP 800-63B AAL3 effectively mandates this. TOTP is phishable; SMS is worse.
+- **Do** require **phishing-resistant, impersonation-resistant** MFA — FIDO2 / WebAuthn (security keys or platform authenticators that meet the verifier-impersonation-resistance requirement) — for all human access to production. NIST SP 800-63B AAL3 requires impersonation-resistance and verifier-impersonation-resistance (§5.1.7, §5.1.9), which FIDO2 with appropriate authenticators (hardware security keys, or platform authenticators backed by attested hardware) satisfies; the requirement is the property, not specifically a separate hardware token. TOTP is phishable; SMS is worse. (Sources: NIST SP 800-63-3 / 800-63B §5.1.7 *Multi-Factor Cryptographic Software / Devices* and §5.1.9 *Multi-Factor Cryptographic Devices*, https://pages.nist.gov/800-63-3/sp800-63b.html .)
 
 ---
 

@@ -248,7 +248,7 @@ identity-aware L7 NetworkPolicy, kube-proxy replacement at scale, cluster
 mesh / multi-cluster service routing, transparent WireGuard / IPsec
 encryption, or Hubble flow visibility you can't get from provider tooling
 ([Cilium docs](https://docs.cilium.io/en/stable/overview/intro/);
-[CNCF — Cilium graduation](https://www.cncf.io/announcements/2023/10/11/cloud-native-computing-foundation-announces-cilium-graduation/)).
+[CNCF — Cilium graduation](https://www.cncf.io/announcement/2023/10/11/cloud-native-computing-foundation-announces-cilium-graduation/)).
 Calico remains a solid L3/L4 choice. Note: GKE Dataplane v2 *is* Cilium.
 
 **If you already run Cilium (or Dataplane v2), evaluate Cilium's built-in service mesh + Gateway API implementation before adding a second mesh control plane (§9).** mTLS via WireGuard/IPsec, identity-aware L7 policy, and Gateway API conformance are already there; "Cilium CNI + Cilium mesh" and "Cilium CNI + Istio Ambient" are distinct options with different operating costs.
@@ -277,8 +277,8 @@ Concrete triggers — **any one** can justify a mesh:
 
 If you adopt a mesh, pick by workload fit, not benchmarks:
 
-- **Istio Ambient** — L4 mTLS / identity for the whole cluster with per-namespace L7 waypoints; the right starting point in 2026 when the trigger is identity ([CNCF — Istio graduation](https://www.cncf.io/announcements/2023/07/12/cncf-istio/)).
-- **Linkerd** — lower-complexity, opinionated, Rust dataplane, narrower feature surface, CNCF-graduated, sidecar model; pick when you want operational simplicity over feature breadth ([CNCF — Linkerd graduation](https://www.cncf.io/announcements/2021/07/28/cloud-native-computing-foundation-announces-linkerd-graduation/)).
+- **Istio Ambient** — L4 mTLS / identity for the whole cluster with per-namespace L7 waypoints; the right starting point in 2026 when the trigger is identity ([CNCF — Istio graduation](https://www.cncf.io/announcement/2023/07/12/cncf-welcomes-istio-as-an-incubating-project/)).
+- **Linkerd** — lower-complexity, opinionated, Rust dataplane, narrower feature surface, CNCF-graduated, sidecar model; pick when you want operational simplicity over feature breadth ([CNCF — Linkerd graduation](https://www.cncf.io/announcement/2021/07/28/cloud-native-computing-foundation-announces-linkerd-graduation/)).
 - **Istio sidecar (classic)** — only when you need WASM filters, deep VirtualService routing, or features ambient hasn't matched yet.
 - **Avoid** running a mesh "for observability" alone — OpenTelemetry, Cilium Hubble, and eBPF cover that without a sidecar on every pod.
 
@@ -294,7 +294,7 @@ Ingress v1 is feature-frozen; Gateway API is the actively-developed
 replacement with a role-oriented split (Infra / Cluster / App) and a
 richer expression model
 ([Gateway API project](https://gateway-api.sigs.k8s.io/);
-[Migrating from Ingress](https://gateway-api.sigs.k8s.io/guides/migrating-from-ingress/)).
+[Migrating from Ingress](https://gateway-api.sigs.k8s.io/guides/)).
 Maturity tiers as of v1.2 (2024-11-21):
 
 - **Standard channel, GA core:** `GatewayClass`, `Gateway`, `HTTPRoute`, `ReferenceGrant`, **GRPCRoute** (Standard since v1.1, May 2024). Target this for new traffic.
@@ -312,7 +312,7 @@ Rules:
 ## 11. Autoscaling
 
 - **HPA on real signals.** CPU is the lowest-quality default; prefer custom or external metrics (RPS, queue depth, p95 latency) ([K8s — HPA](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)).
-- **KEDA for event-driven scale and scale-to-zero.** Wraps queues, cron, Prometheus metrics as HPA external metrics ([KEDA](https://keda.sh/); [CNCF — KEDA graduation](https://www.cncf.io/announcements/2023/08/22/cloud-native-computing-foundation-announces-keda-graduation/)).
+- **KEDA for event-driven scale and scale-to-zero.** Wraps queues, cron, Prometheus metrics as HPA external metrics ([KEDA](https://keda.sh/); [CNCF — KEDA graduation](https://www.cncf.io/announcement/2023/08/22/cloud-native-computing-foundation-announces-keda-graduation/)).
 - **VPA in recommendation mode** for right-sizing; never auto-mode together with HPA on the same metric. On v1.33+ apply VPA recommendations via the in-place `resize` subresource (§5) when restart cost is high.
 - **Cluster scale: prefer Karpenter v1.** Karpenter shipped **v1.0 in August 2024** with stable `NodePool` / `EC2NodeClass` APIs; v1beta1 is removed in v1.1 ([AWS — Announcing Karpenter 1.0](https://aws.amazon.com/blogs/containers/announcing-karpenter-1-0/); [Karpenter v1.0.0 release](https://github.com/kubernetes-sigs/karpenter/releases/tag/v1.0.0)). On AKS use **Node Auto-Provisioning (NAP)**, the productised AKS Karpenter provider ([AKS — Node Auto-Provisioning](https://learn.microsoft.com/en-us/azure/aks/node-autoprovision)). On GKE use node auto-provisioning.
 - **Use Karpenter disruption budgets by reason.** Separate budgets for `Drifted`, `Underutilized`, and `Empty` are the practical cost/availability lever most teams miss — keep `Drifted` aggressive for security patching, throttle `Underutilized` to protect long-running workloads.

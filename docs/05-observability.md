@@ -49,7 +49,7 @@ questions of a running system without shipping new code**.
   languages (PromQL/LogQL/SPL/DD-query), alerts, dashboards, retention,
   operator muscle memory — Datadog and Honeycomb publicly agree
   ([DD](https://www.datadoghq.com/blog/opentelemetry-instrumentation/);
-  [Honeycomb](https://www.honeycomb.io/blog/opentelemetry-and-honeycomb)).
+  [Honeycomb](https://www.honeycomb.io/blog)).
   Plan migrations on the *backend* axis separately.
 - **Propagate W3C Trace Context (`traceparent` / `tracestate`) on every
   hop** ([Trace Context](https://www.w3.org/TR/trace-context/);
@@ -286,7 +286,7 @@ cannot enforce cardinality. Do this at runtime:
   `max_global_series_per_metric`, ingester/receive limits — the actual
   write-path enforcement; scrape-time relabel does not protect a
   shared remote-write target
-  ([Mimir](https://grafana.com/docs/mimir/latest/configure/configure-cardinality-limits/)).
+  ([Mimir](https://grafana.com/docs/mimir/latest/configure/configure-limits/)).
 
 ---
 
@@ -353,13 +353,10 @@ anomaly detection are owned by ch10 §11–12.
   O'Reilly 2020, ch. 7–8). Use **multi-window, multi-burn-rate** alerts:
   fast (5m + 1h, burn ≥ 14.4) plus slow (30m + 6h, burn ≥ 6)
   ([SRE Workbook ch. 5 §6, Table 5-3](https://sre.google/workbook/alerting-on-slos/#6-multiwindow-multi-burn-rate-alerts)).
-- **Codify SLOs.** For Prometheus-backed estates default to **Sloth**
-  (recording + alerting rules from YAML) or **Pyrra** (K8s operator).
-  Use **slo-generator** only when SLI sources span multiple backends
-  (Datadog, BigQuery, Elastic). Treat **OpenSLO** as the portable spec
-  to author against, not a runtime
-  ([sloth](https://sloth.dev/); [pyrra](https://github.com/pyrra-dev/pyrra);
-  [OpenSLO](https://openslo.com/)).
+- **Codify SLOs — see ch09 §2.2 (canonical owner).** The spec must
+  generate the §2.1 alert rules, not be paraphrased into them. ch09 owns
+  tool selection (Sloth, Pyrra, OpenSLO, slo-generator, managed
+  equivalents) and the spec-as-code workflow.
 
 ### 9a. Legitimate non-symptom pages (carve-outs)
 

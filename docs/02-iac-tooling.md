@@ -16,7 +16,7 @@ is covered in depth in chapter 04.
 - **Terraform (HashiCorp, BUSL 1.1 since Aug 2023)** — largest ecosystem and
   registry. IBM-owned since 27 Feb 2025 (IBM Newsroom, *IBM Completes
   Acquisition of HashiCorp*,
-  https://newsroom.ibm.com/2025-02-27-ibm-completes-acquisition-of-hashicorp,-creates-comprehensive,-end-to-end-hybrid-cloud-platform).
+  https://newsroom.ibm.com/2025-02-27-IBM-Completes-Acquisition-of-HashiCorp,-Creating-a-Comprehensive-End-to-End-Hybrid-Cloud-Platform).
   Non-OSI; TF Cloud / TFE is the upsell.
 - **OpenTofu (Linux Foundation, MPL-2.0)** — fork of Terraform 1.5.7 (Sept
   2023). Drop-in CLI, same HCL, same provider protocol. Ships features

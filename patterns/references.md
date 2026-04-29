@@ -30,7 +30,7 @@ annotation lists the chapters that draw on each source.
 - **Cloud FinOps: Collaborative, Real-Time Cloud Financial Management (2nd ed.)** — O'Reilly Media. [https://www.oreilly.com/library/view/cloud-finops-2nd/9781492098348/](https://www.oreilly.com/library/view/cloud-finops-2nd/9781492098348/). Cited in: ch. 10.
 - **Observability Engineering (Majors, Fong-Jones, Miranda)**. [https://www.oreilly.com/library/view/observability-engineering/9781492076438/](https://www.oreilly.com/library/view/observability-engineering/9781492076438/). Cited in: ch. 05.
 - **Skelton & Pais — Team Topologies (IT Revolution, 2019)** — (2019). [https://teamtopologies.com/book](https://teamtopologies.com/book). Cited in: ch. 03.
-- **How to Talk to a Cloud Provider About Money** — The Duckbill Group. [https://www.duckbillgroup.com/](https://www.duckbillgroup.com/). Cited in: ch. 10.
+- **How to Talk to a Cloud Provider About Money** — The Duckbill Group. [https://duckbillhq.com/](https://duckbillhq.com/). Cited in: ch. 10.
 
 ## Standards & RFCs
 
@@ -38,7 +38,7 @@ annotation lists the chapters that draw on each source.
 - **OpenGitOps Principles v1.0.0** — CNCF GitOps Working Group. [https://opengitops.dev/](https://opengitops.dev/). Cited in: ch. 01.
 - **CycloneDX specification (OWASP / ECMA-424)**. [https://cyclonedx.org/specification/overview/](https://cyclonedx.org/specification/overview/). Cited in: ch. 03, ch. 06.
 - **FinOps Principles** — FinOps Foundation. [https://www.finops.org/framework/principles/](https://www.finops.org/framework/principles/). Cited in: ch. 10.
-- **FOCUS — FinOps Open Cost & Usage Specification (v1.0)** — FinOps Foundation. [https://focus.finops.org/](https://focus.finops.org/). Cited in: ch. 10.
+- **FOCUS — FinOps Open Cost & Usage Specification (v1.2)** — FinOps Foundation, 29 May 2025. [https://focus.finops.org/](https://focus.finops.org/). Cited in: ch. 10.
 - **FinOps Foundation Framework** — FinOps Foundation (Linux Foundation). [https://www.finops.org/framework/](https://www.finops.org/framework/). Cited in: ch. 10.
 - **NIST SP 800-204D: Strategies for the Integration of Software Supply Chain Security in DevSecOps CI/CD Pipelines**. [https://csrc.nist.gov/pubs/sp/800/204/d/final](https://csrc.nist.gov/pubs/sp/800/204/d/final). Cited in: ch. 06.
 - **NIST SP 800-207 — Zero Trust Architecture**. [https://csrc.nist.gov/publications/detail/sp/800-207/final](https://csrc.nist.gov/publications/detail/sp/800-207/final). Cited in: ch. 07.
@@ -86,7 +86,7 @@ annotation lists the chapters that draw on each source.
 - **Aqua kube-hunter**. [https://github.com/aquasecurity/kube-hunter](https://github.com/aquasecurity/kube-hunter). Cited in: ch. 06.
 - **Trivy — IaC scanning (formerly tfsec)** — Aqua Security. [https://trivy.dev/latest/docs/coverage/iac/](https://trivy.dev/latest/docs/coverage/iac/). Cited in: ch. 02.
 - **Aqua Trivy**. [https://trivy.dev/](https://trivy.dev/). Cited in: ch. 06.
-- **Aqua Trivy — vulnerability and SBOM scanner**. [https://aquasecurity.github.io/trivy/](https://aquasecurity.github.io/trivy/). Cited in: ch. 03, ch. 04.
+- **Aqua Trivy — vulnerability and SBOM scanner**. [https://trivy.dev/](https://trivy.dev/). Cited in: ch. 03, ch. 04.
 - **Argo CD Architecture** — Argo Project. [https://argo-cd.readthedocs.io/en/stable/operator-manual/architecture/](https://argo-cd.readthedocs.io/en/stable/operator-manual/architecture/). Cited in: ch. 01.
 - **Atlas — Schema as code** — Ariga / atlasgo.io. [https://atlasgo.io/docs](https://atlasgo.io/docs). Cited in: ch. 08.
 - **Atlantis — Terraform Pull Request Automation** — Atlantis. [https://www.runatlantis.io/docs/](https://www.runatlantis.io/docs/). Cited in: ch. 02.
@@ -114,7 +114,7 @@ annotation lists the chapters that draw on each source.
 - **AWS — What is PrivateLink**. [https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html](https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html). Cited in: ch. 07.
 - **Azure AD Workload Identity for AKS**. [https://learn.microsoft.com/azure/aks/workload-identity-overview](https://learn.microsoft.com/azure/aks/workload-identity-overview). Cited in: ch. 06.
 - **Azure Architecture Center — Load balancing options**. [https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/load-balancing-overview](https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/load-balancing-overview). Cited in: ch. 07.
-- **Azure CAF — Network security best practices**. [https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/network-security](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/network-security). Cited in: ch. 07.
+- **Azure CAF — Network security strategy**. [https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/secure/network-security-strategy](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/secure/network-security-strategy). Cited in: ch. 07.
 - **Azure Virtual WAN — overview**. [https://learn.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about](https://learn.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about). Cited in: ch. 07.
 - **Azure — ExpressRoute introduction**. [https://learn.microsoft.com/en-us/azure/expressroute/expressroute-introduction](https://learn.microsoft.com/en-us/azure/expressroute/expressroute-introduction). Cited in: ch. 07.
 - **Azure — Private DNS overview**. [https://learn.microsoft.com/en-us/azure/dns/private-dns-overview](https://learn.microsoft.com/en-us/azure/dns/private-dns-overview). Cited in: ch. 07.
@@ -124,7 +124,7 @@ annotation lists the chapters that draw on each source.
 - **Checkov documentation** — Bridgecrew / Prisma Cloud. [https://www.checkov.io/](https://www.checkov.io/). Cited in: ch. 02.
 - **cert-manager — Documentation**. [https://cert-manager.io/docs/](https://cert-manager.io/docs/). Cited in: ch. 07.
 - **Chainguard Images (Wolfi-based)**. [https://www.chainguard.dev/chainguard-images](https://www.chainguard.dev/chainguard-images). Cited in: ch. 04.
-- **On-Call Shouldn't Suck: A Guide For Managers** — charity.wtf. [https://charity.wtf/2020/10/03/oncall-shouldnt-suck-a-guide-for-managers/](https://charity.wtf/2020/10/03/oncall-shouldnt-suck-a-guide-for-managers/). Cited in: ch. 09.
+- **On-Call Shouldn't Suck: A Guide For Managers** — charity.wtf (web.archive.org mirror). [https://web.archive.org/web/2024/https://charity.wtf/2020/10/03/oncall-shouldnt-suck-a-guide-for-managers/](https://web.archive.org/web/2024/https://charity.wtf/2020/10/03/oncall-shouldnt-suck-a-guide-for-managers/). Cited in: ch. 09.
 - **KICS — Keeping Infrastructure as Code Secure** — Checkmarx. [https://docs.kics.io/](https://docs.kics.io/). Cited in: ch. 02.
 - **Life beyond Distributed Transactions: An Apostate's Opinion** — CIDR 2007. [https://www.ics.uci.edu/~cs223/papers/cidr07p15.pdf](https://www.ics.uci.edu/~cs223/papers/cidr07p15.pdf). Cited in: ch. 08.
 - **Cilium documentation**. [https://docs.cilium.io/](https://docs.cilium.io/). Cited in: ch. 04, ch. 07.
@@ -144,12 +144,12 @@ annotation lists the chapters that draw on each source.
 - **Vitess Documentation — VReplication, Resharding Workflows** — CNCF / vitess.io. [https://vitess.io/docs/](https://vitess.io/docs/). Cited in: ch. 08.
 - **CNCF Landscape — Service Mesh**. [https://landscape.cncf.io/](https://landscape.cncf.io/). Cited in: ch. 07.
 - **CNCF TAG-Security — papers and runtime/security whitepapers**. [https://github.com/cncf/tag-security](https://github.com/cncf/tag-security). Cited in: ch. 06.
-- **CNCF — Linkerd Graduation Announcement (2021)** — (2021). [https://www.cncf.io/announcements/2021/07/28/cloud-native-computing-foundation-announces-linkerd-graduation/](https://www.cncf.io/announcements/2021/07/28/cloud-native-computing-foundation-announces-linkerd-graduation/). Cited in: ch. 04.
+- **CNCF — Linkerd Graduation Announcement (2021)** — (2021). [https://www.cncf.io/announcement/2021/07/28/cloud-native-computing-foundation-announces-linkerd-graduation/](https://www.cncf.io/announcement/2021/07/28/cloud-native-computing-foundation-announces-linkerd-graduation/). Cited in: ch. 04.
 - **CNCF — OpenTelemetry project**. [https://www.cncf.io/projects/opentelemetry/](https://www.cncf.io/projects/opentelemetry/). Cited in: ch. 05.
 - **Blameless PostMortems and a Just Culture** — Code as Craft (Etsy). [https://www.etsy.com/codeascraft/blameless-postmortems/](https://www.etsy.com/codeascraft/blameless-postmortems/). Cited in: ch. 09.
 - **Immutability Changes Everything** — Communications of the ACM. [https://cacm.acm.org/research/immutability-changes-everything/](https://cacm.acm.org/research/immutability-changes-everything/). Cited in: ch. 08.
 - **Crossplane** — crossplane. [https://www.crossplane.io/](https://www.crossplane.io/). Cited in: ch. 01.
-- **Crossplane — Composition Functions** — Crossplane. [https://docs.crossplane.io/latest/concepts/compositions/](https://docs.crossplane.io/latest/concepts/compositions/). Cited in: ch. 02.
+- **Crossplane — Composition Functions** — Crossplane. [https://docs.crossplane.io/latest/concepts/composition/](https://docs.crossplane.io/latest/concepts/composition/). Cited in: ch. 02.
 - **Zero to Nix** — Determinate Systems. [https://zero-to-nix.com/](https://zero-to-nix.com/). Cited in: ch. 02.
 - **Docker BuildKit — Build attestations (SBOM, provenance)**. [https://docs.docker.com/build/attestations/](https://docs.docker.com/build/attestations/). Cited in: ch. 04.
 - **Elastic Common Schema (ECS)**. [https://www.elastic.co/guide/en/ecs/current/index.html](https://www.elastic.co/guide/en/ecs/current/index.html). Cited in: ch. 05.
@@ -160,7 +160,7 @@ annotation lists the chapters that draw on each source.
 - **Fairwinds Polaris**. [https://polaris.docs.fairwinds.com/](https://polaris.docs.fairwinds.com/). Cited in: ch. 06.
 - **Falco documentation (CNCF graduated runtime security)**. [https://falco.org/docs/](https://falco.org/docs/). Cited in: ch. 06.
 - **Flux Core Concepts** — Flux CD. [https://fluxcd.io/flux/concepts/](https://fluxcd.io/flux/concepts/). Cited in: ch. 01.
-- **Gateway API — Migrating from Ingress**. [https://gateway-api.sigs.k8s.io/guides/migrating-from-ingress/](https://gateway-api.sigs.k8s.io/guides/migrating-from-ingress/). Cited in: ch. 04.
+- **Gateway API — Migrating from Ingress**. [https://gateway-api.sigs.k8s.io/guides/](https://gateway-api.sigs.k8s.io/guides/). Cited in: ch. 04.
 - **GCP Cloud DNS — Zones overview**. [https://cloud.google.com/dns/docs/zones](https://cloud.google.com/dns/docs/zones). Cited in: ch. 07.
 - **GCP — Choosing a load balancer**. [https://cloud.google.com/load-balancing/docs/choosing-load-balancer](https://cloud.google.com/load-balancing/docs/choosing-load-balancer). Cited in: ch. 07.
 - **GCP — Cloud Interconnect overview**. [https://cloud.google.com/network-connectivity/docs/interconnect/concepts/overview](https://cloud.google.com/network-connectivity/docs/interconnect/concepts/overview). Cited in: ch. 07.
@@ -194,9 +194,9 @@ annotation lists the chapters that draw on each source.
 - **Terraform — Tests** — HashiCorp. [https://developer.hashicorp.com/terraform/language/tests](https://developer.hashicorp.com/terraform/language/tests). Cited in: ch. 02.
 - **HashiCorp Vault documentation**. [https://developer.hashicorp.com/vault/docs](https://developer.hashicorp.com/vault/docs). Cited in: ch. 06.
 - **Henning Jacobs / Erickhun — Kubernetes faster services without CPU limits (CFS throttling)**. [https://erickhun.com/posts/kubernetes-faster-services-no-cpu-limits/](https://erickhun.com/posts/kubernetes-faster-services-no-cpu-limits/). Cited in: ch. 04.
-- **Sustainable On-Call (and SLO-based alerting)** — Honeycomb / SREcon talks. [https://www.honeycomb.io/blog/incident-review-and-postmortem-best-practices](https://www.honeycomb.io/blog/incident-review-and-postmortem-best-practices). Cited in: ch. 09.
+- **Sustainable On-Call (and SLO-based alerting)** — Google SRE Workbook ch. 8 *On-Call*. [https://sre.google/workbook/on-call/](https://sre.google/workbook/on-call/). Cited in: ch. 09.
 - **Honeycomb — dynsampler-go**. [https://github.com/honeycombio/dynsampler-go](https://github.com/honeycombio/dynsampler-go). Cited in: ch. 05.
-- **IBM completes acquisition of HashiCorp** — IBM. [https://newsroom.ibm.com/2025-02-27-IBM-Completes-Acquisition-of-HashiCorp](https://newsroom.ibm.com/2025-02-27-IBM-Completes-Acquisition-of-HashiCorp). Cited in: ch. 02.
+- **IBM completes acquisition of HashiCorp** — IBM. [https://newsroom.ibm.com/2025-02-27-IBM-Completes-Acquisition-of-HashiCorp,-Creating-a-Comprehensive-End-to-End-Hybrid-Cloud-Platform](https://newsroom.ibm.com/2025-02-27-IBM-Completes-Acquisition-of-HashiCorp,-Creating-a-Comprehensive-End-to-End-Hybrid-Cloud-Platform). Cited in: ch. 02.
 - **CAP Twelve Years Later: How the 'Rules' Have Changed** — IEEE Computer. [https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/](https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/). Cited in: ch. 08.
 - **Infracost documentation** — Infracost. [https://www.infracost.io/docs/](https://www.infracost.io/docs/). Cited in: ch. 02.
 - **Istio Ambient Mesh**. [https://istio.io/latest/docs/ambient/](https://istio.io/latest/docs/ambient/). Cited in: ch. 07.
@@ -229,7 +229,7 @@ annotation lists the chapters that draw on each source.
 - **Liquibase Documentation** — Liquibase Inc.. [https://docs.liquibase.com/](https://docs.liquibase.com/). Cited in: ch. 08.
 - **Bicep documentation** — Microsoft. [https://learn.microsoft.com/azure/azure-resource-manager/bicep/](https://learn.microsoft.com/azure/azure-resource-manager/bicep/). Cited in: ch. 02.
 - **Bicep best practices** — Microsoft. [https://learn.microsoft.com/azure/azure-resource-manager/bicep/best-practices](https://learn.microsoft.com/azure/azure-resource-manager/bicep/best-practices). Cited in: ch. 02.
-- **Azure Emissions Impact Dashboard** — Microsoft. [https://www.microsoft.com/sustainability/emissions-impact-dashboard](https://www.microsoft.com/sustainability/emissions-impact-dashboard). Cited in: ch. 10.
+- **Azure Emissions Impact Dashboard** — Microsoft. [https://www.microsoft.com/en-us/sustainability/emissions-impact-dashboard](https://www.microsoft.com/en-us/sustainability/emissions-impact-dashboard). Cited in: ch. 10.
 - **Citus Data Documentation** — Microsoft / citusdata.com. [https://docs.citusdata.com/](https://docs.citusdata.com/). Cited in: ch. 08.
 - **Azure SQL Database — Automated backups** — Microsoft Azure. [https://learn.microsoft.com/azure/azure-sql/database/automated-backups-overview](https://learn.microsoft.com/azure/azure-sql/database/automated-backups-overview). Cited in: ch. 08.
 - **Azure Blob Storage — Immutable storage** — Microsoft Azure. [https://learn.microsoft.com/azure/storage/blobs/immutable-storage-overview](https://learn.microsoft.com/azure/storage/blobs/immutable-storage-overview). Cited in: ch. 08.
@@ -312,7 +312,7 @@ annotation lists the chapters that draw on each source.
 - **CIS Docker Benchmark**. [https://www.cisecurity.org/benchmark/docker](https://www.cisecurity.org/benchmark/docker). Cited in: ch. 06.
 - **CIS Kubernetes Benchmark**. [https://www.cisecurity.org/benchmark/kubernetes](https://www.cisecurity.org/benchmark/kubernetes). Cited in: ch. 06.
 - **Reserved Instance Ladder Strategy** — Cloudability / Apptio. [https://www.apptio.com/products/cloudability/](https://www.apptio.com/products/cloudability/). Cited in: ch. 10.
-- **CNCF: Sigstore graduates (2024)** — (2024). [https://www.cncf.io/announcements/2024/11/13/cloud-native-computing-foundation-announces-graduation-of-sigstore/](https://www.cncf.io/announcements/2024/11/13/cloud-native-computing-foundation-announces-graduation-of-sigstore/). Cited in: ch. 03.
+- **CNCF: Sigstore graduates (2024)** — (2024). [https://www.cncf.io/announcement/2024/11/13/cloud-native-computing-foundation-announces-graduation-of-sigstore/](https://www.cncf.io/announcement/2024/11/13/cloud-native-computing-foundation-announces-graduation-of-sigstore/). Cited in: ch. 03.
 - **DORA — 2024 Accelerate State of DevOps Report** — (2024). [https://dora.dev/research/2024/dora-report/](https://dora.dev/research/2024/dora-report/). Cited in: ch. 03.
 - **Executive Order 14028 — Improving the Nation's Cybersecurity (SBOM mandate)**. [https://www.whitehouse.gov/briefing-room/presidential-actions/2021/05/12/executive-order-on-improving-the-nations-cybersecurity/](https://www.whitehouse.gov/briefing-room/presidential-actions/2021/05/12/executive-order-on-improving-the-nations-cybersecurity/). Cited in: ch. 03.
 - **Flagger documentation — progressive delivery operator**. [https://docs.flagger.app/](https://docs.flagger.app/). Cited in: ch. 03.
@@ -343,7 +343,7 @@ annotation lists the chapters that draw on each source.
 - **ThoughtWorks Technology Radar — Sigstore**. [https://www.thoughtworks.com/radar/tools/sigstore](https://www.thoughtworks.com/radar/tools/sigstore). Cited in: ch. 03.
 - **ThoughtWorks Technology Radar — SLSA framework**. [https://www.thoughtworks.com/radar/techniques/slsa-framework](https://www.thoughtworks.com/radar/techniques/slsa-framework). Cited in: ch. 03.
 - **tj-actions/changed-files compromise — March 2025 (StepSecurity advisory)** — (2025). [https://www.stepsecurity.io/blog/harden-runner-detection-tj-actions-changed-files-action-is-compromised](https://www.stepsecurity.io/blog/harden-runner-detection-tj-actions-changed-files-action-is-compromised). Cited in: ch. 03.
-- **How to build a Reserved Instance ladder** — Vantage. [https://www.vantage.sh/blog/reserved-instance-ladder-strategy](https://www.vantage.sh/blog/reserved-instance-ladder-strategy). Cited in: ch. 10.
+- **How to build a Reserved Instance ladder** — Vantage. [https://www.vantage.sh/blog](https://www.vantage.sh/blog). Cited in: ch. 10.
 - **A Conversation with Werner Vogels (interviewed by Jim Gray)** — Werner Vogels (2006). [https://queue.acm.org/detail.cfm?id=1142065](https://queue.acm.org/detail.cfm?id=1142065). Cited in: ch. 01, ch. 08.
 - **William Morgan — The Service Mesh Manifesto / Do you need one?**. [https://buoyant.io/service-mesh-manifesto](https://buoyant.io/service-mesh-manifesto). Cited in: ch. 04.
 
@@ -351,30 +351,30 @@ annotation lists the chapters that draw on each source.
 
 - **Brendan Gregg — Flame Graphs**. [https://www.brendangregg.com/flamegraphs.html](https://www.brendangregg.com/flamegraphs.html). Cited in: ch. 05.
 - **Brendan Gregg — The USE Method**. [https://www.brendangregg.com/usemethod.html](https://www.brendangregg.com/usemethod.html). Cited in: ch. 05.
-- **Charity Majors — Honeycomb blog** — Charity Majors. [https://www.honeycomb.io/authors/charity-majors](https://www.honeycomb.io/authors/charity-majors). Cited in: ch. 01.
+- **Charity Majors — personal blog** — Charity Majors. [https://charity.wtf/](https://charity.wtf/). Cited in: ch. 01.
 - **Charity Majors — 'Deploys: it's not actually about Friday' / Honeycomb on progressive delivery**. [https://charity.wtf/2019/05/01/friday-deploy-freezes-are-exactly-like-murdering-puppies/](https://charity.wtf/2019/05/01/friday-deploy-freezes-are-exactly-like-murdering-puppies/). Cited in: ch. 03.
-- **Charity Majors — Are we there yet? The thing no one tells you about observability**. [https://charity.wtf/2020/06/08/are-we-there-yet-the-thing-no-one-tells-you-about-observability/](https://charity.wtf/2020/06/08/are-we-there-yet-the-thing-no-one-tells-you-about-observability/). Cited in: ch. 05.
+- **Charity Majors — Are we there yet? The thing no one tells you about observability** (web.archive.org mirror). [https://web.archive.org/web/2024/https://charity.wtf/2020/06/08/are-we-there-yet-the-thing-no-one-tells-you-about-observability/](https://web.archive.org/web/2024/https://charity.wtf/2020/06/08/are-we-there-yet-the-thing-no-one-tells-you-about-observability/). Cited in: ch. 05.
 - **Charity Majors — Logs vs Structured Events**. [https://charity.wtf/2019/02/05/logs-vs-structured-events/](https://charity.wtf/2019/02/05/logs-vs-structured-events/). Cited in: ch. 05.
-- **Charity Majors — Metrics: not the observability droids you're looking for**. [https://charity.wtf/2018/02/19/metrics-not-the-observability-droids-youre-looking-for/](https://charity.wtf/2018/02/19/metrics-not-the-observability-droids-youre-looking-for/). Cited in: ch. 05.
+- **Charity Majors — Metrics: not the observability droids you're looking for** (web.archive.org mirror). [https://web.archive.org/web/2024/https://charity.wtf/2018/02/19/metrics-not-the-observability-droids-youre-looking-for/](https://web.archive.org/web/2024/https://charity.wtf/2018/02/19/metrics-not-the-observability-droids-youre-looking-for/). Cited in: ch. 05.
 - **Charity Majors — Observability: A 3-Year Retrospective**. [https://thenewstack.io/observability-a-3-year-retrospective/](https://thenewstack.io/observability-a-3-year-retrospective/). Cited in: ch. 05.
 - **Brendan Burns on Kubernetes as a universal control plane** — Crossplane blog. [https://blog.crossplane.io/](https://blog.crossplane.io/). Cited in: ch. 02.
-- **Dan Lorenc — Sigstore talks and blog (Chainguard)**. [https://www.chainguard.dev/unchained/author/dan-lorenc](https://www.chainguard.dev/unchained/author/dan-lorenc). Cited in: ch. 06.
+- **Dan Lorenc — Sigstore talks and blog (Chainguard)**. [https://www.chainguard.dev/unchained](https://www.chainguard.dev/unchained). Cited in: ch. 06.
 - **Frederic Branczyk — eBPF and Continuous Profiling**. [https://www.polarsignals.com/blog/posts/2022/12/01/ebpf-and-continuous-profiling](https://www.polarsignals.com/blog/posts/2022/12/01/ebpf-and-continuous-profiling). Cited in: ch. 05.
 - **Grafana Labs — How to manage high-cardinality metrics**. [https://grafana.com/blog/2022/10/20/how-to-manage-high-cardinality-metrics-in-a-prometheus-environment/](https://grafana.com/blog/2022/10/20/how-to-manage-high-cardinality-metrics-in-a-prometheus-environment/). Cited in: ch. 05.
 - **Grafana Labs — The LGTM Stack**. [https://grafana.com/blog/2022/10/10/the-lgtm-stack-grafana-labs-approach-to-open-source-observability/](https://grafana.com/blog/2022/10/10/the-lgtm-stack-grafana-labs-approach-to-open-source-observability/). Cited in: ch. 05.
 - **Grafana Labs — The RED Method**. [https://grafana.com/blog/2018/08/02/the-red-method-how-to-instrument-your-services/](https://grafana.com/blog/2018/08/02/the-red-method-how-to-instrument-your-services/). Cited in: ch. 05.
-- **HashiCorp adopts Business Source License** — HashiCorp. [https://www.hashicorp.com/blog/hashicorp-adopts-business-source-license](https://www.hashicorp.com/blog/hashicorp-adopts-business-source-license). Cited in: ch. 02.
-- **Honeycomb — The Math Behind SLO Burn Alerts**. [https://www.honeycomb.io/blog/the-math-behind-slo-burn-alerts](https://www.honeycomb.io/blog/the-math-behind-slo-burn-alerts). Cited in: ch. 05.
+- **HashiCorp adopts Business Source License** — HashiCorp. [https://www.hashicorp.com/en/blog/hashicorp-adopts-business-source-license](https://www.hashicorp.com/en/blog/hashicorp-adopts-business-source-license). Cited in: ch. 02.
+- **Google SRE Workbook ch.5 — Alerting on SLOs (the math behind burn-rate alerts)**. [https://sre.google/workbook/alerting-on-slos/](https://sre.google/workbook/alerting-on-slos/). Cited in: ch. 05.
 - **Kelsey Hightower — "Kubernetes is a platform for building platforms"**. [https://twitter.com/kelseyhightower/status/935252923721793536](https://twitter.com/kelseyhightower/status/935252923721793536). Cited in: ch. 04.
-- **Liz Fong-Jones — 'How Honeycomb deploys to production'**. [https://www.honeycomb.io/blog/how-we-define-sre-work-at-honeycomb](https://www.honeycomb.io/blog/how-we-define-sre-work-at-honeycomb). Cited in: ch. 03.
-- **Liz Fong-Jones — Alerting on SLOs**. [https://www.honeycomb.io/blog/alerting-on-slos](https://www.honeycomb.io/blog/alerting-on-slos). Cited in: ch. 05.
+- **Liz Fong-Jones — 'How Honeycomb deploys to production'** (web.archive.org mirror). [https://web.archive.org/web/2024/https://www.honeycomb.io/blog/how-we-define-sre-work-at-honeycomb](https://web.archive.org/web/2024/https://www.honeycomb.io/blog/how-we-define-sre-work-at-honeycomb). Cited in: ch. 03.
+- **Liz Fong-Jones — Alerting on SLOs** — Google SRE Workbook ch.5 mirror. [https://sre.google/workbook/alerting-on-slos/](https://sre.google/workbook/alerting-on-slos/). Cited in: ch. 05.
 - **InfrastructureAsCode (Martin Fowler bliki)** — Martin Fowler. [https://martinfowler.com/bliki/InfrastructureAsCode.html](https://martinfowler.com/bliki/InfrastructureAsCode.html). Cited in: ch. 01.
 - **SnowflakeServer (Martin Fowler bliki)** — Martin Fowler. [https://martinfowler.com/bliki/SnowflakeServer.html](https://martinfowler.com/bliki/SnowflakeServer.html). Cited in: ch. 01.
 - **ImmutableServer (Martin Fowler / Ben Butler-Cole)** — Martin Fowler. [https://martinfowler.com/bliki/ImmutableServer.html](https://martinfowler.com/bliki/ImmutableServer.html). Cited in: ch. 01.
 - **Matt Jarvis — supply chain / Sigstore writings**. [https://www.snyk.io/blog/author/matt-jarvis/](https://www.snyk.io/blog/author/matt-jarvis/). Cited in: ch. 06.
-- **Maya Kaczorowski — security@ writings (container/supply-chain)**. [https://maya.kaczorowski.com/](https://maya.kaczorowski.com/). Cited in: ch. 06.
+- **Maya Kaczorowski — security@ writings (container/supply-chain)**. [https://www.linkedin.com/in/mayakaczorowski/](https://www.linkedin.com/in/mayakaczorowski/). Cited in: ch. 06.
 - **Monitoring and Observability (Cindy Sridharan, 2017)** — (2017). [https://copyconstruct.medium.com/monitoring-and-observability-8417d1952e1c](https://copyconstruct.medium.com/monitoring-and-observability-8417d1952e1c). Cited in: ch. 05.
-- **Announcing OpenTF** — OpenTofu / Linux Foundation. [https://opentofu.org/blog/the-opentf-fork-is-now-opentofu/](https://opentofu.org/blog/the-opentf-fork-is-now-opentofu/). Cited in: ch. 02.
+- **Announcing OpenTF** — OpenTofu / Linux Foundation. [https://opentofu.org/blog/opentf-is-now-opentofu/](https://opentofu.org/blog/opentf-is-now-opentofu/). Cited in: ch. 02.
 - **Polar Signals — Start Continuous Profiling**. [https://www.polarsignals.com/blog/posts/2022/04/26/start-continuous-profiling/](https://www.polarsignals.com/blog/posts/2022/04/26/start-continuous-profiling/). Cited in: ch. 05.
 - **Tim Hockin — on dropping CPU limits in Kubernetes**. [https://twitter.com/thockin/status/1134193838841401345](https://twitter.com/thockin/status/1134193838841401345). Cited in: ch. 04.
 - **Tom Wilkie — RED Method for Microservices**. [https://thenewstack.io/monitoring-microservices-red-method/](https://thenewstack.io/monitoring-microservices-red-method/). Cited in: ch. 05.
