@@ -8,6 +8,11 @@ This glossary defines the terms used across the Infrastructure Engineering Guide
 
 ## A
 
+### AAL1 / AAL2 / AAL3 (Authenticator Assurance Levels)
+NIST SP 800-63B's three authenticator-assurance tiers. **AAL1** = single-factor (something you know or have). **AAL2** = multi-factor with replay resistance (TOTP + password is the floor). **AAL3** = both factors must be impersonation-resistant, *and* one must be a hardware-based cryptographic authenticator (multi-factor cryptographic device, or single-factor cryptographic device + memorised secret). "AAL3 = YubiKey" is the most common implementation, not the definition — see Table 4-1 for the full permitted matrix. Production access, IdP admin, and PIM elevation are AAL3 by default in this guide.
+- **Used in**: ch12 §3
+- **Sources**: NIST SP 800-63B *Authentication and Lifecycle Management* §4.2 (AAL2) and §4.3 (AAL3, esp. Table 4-1) — https://pages.nist.gov/800-63-3/sp800-63b.html ; NIST SP 800-157r1 *Guidelines for Derived PIV Credentials* — https://csrc.nist.gov/pubs/sp/800/157/r1/final
+
 ### ACME (Automatic Certificate Management Environment)
 IETF protocol for automated issuance and renewal of X.509 certificates. Underpins Let's Encrypt and most public CAs; *cert-manager* speaks ACME for in-cluster TLS.
 - **Used in**: ch07 §6
@@ -50,8 +55,8 @@ Signed statement describing a step in a software supply chain (build, test, scan
 
 ### Audit Log
 Append-only record of who did what, when, against which resource. Distinct from application logs; required for compliance and incident forensics.
-- **Used in**: ch05 §6, ch06 §5
-- **Sources**: Kubernetes Auditing — https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/ ; AWS CloudTrail concepts — https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html
+- **Used in**: ch05 §6, ch06 §16, ch12 §11
+- **Sources**: Kubernetes Auditing — https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/ ; AWS CloudTrail concepts — https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html ; NIST SP 800-92 *Guide to Computer Security Log Management* — https://csrc.nist.gov/pubs/sp/800/92/final
 
 ### Autovacuum
 PostgreSQL background process that reclaims dead-tuple space and updates planner statistics. Tuning it (per-table thresholds, cost limits) is a standard hot-path for high-write databases.
@@ -109,6 +114,11 @@ Deployment strategy with two production environments where the inactive one is u
 AWS-maintained, container-optimized Linux distribution with an immutable root filesystem and API-driven configuration.
 - **Used in**: ch04
 - **Sources**: Bottlerocket docs — https://bottlerocket.dev/
+
+### Break-glass (emergency-access account)
+Sealed, monitored, rarely-used identity that bypasses federation, MFA-method-restriction, and Conditional Access — *and only those constraints* — so the company is not locked out of itself when its own auth plane is the incident. Not a backdoor: credentials are sealed (split-knowledge vault or paired sealed envelopes), use requires multi-party check-out, any successful sign-in fires a high-priority alert, and rotation follows every legitimate use plus a quarterly drill.
+- **Used in**: ch12 §8
+- **Sources**: Google, *Building Secure and Reliable Systems* (O'Reilly, 2020), Ch. 5 *Design for Least Privilege* — https://sre.google/books/building-secure-reliable-systems/ ; Microsoft Entra docs *Manage emergency-access accounts* — https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access ; AWS *Root user best practices* — https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html ; NIST SP 800-53 rev 5 AC-3(2) *Dual Authorization*
 
 ### BuildKit
 Modern Docker/Moby build engine with cache mounts, secrets, and frontend plugins. Required for reproducible and *hermetic* builds.
@@ -231,6 +241,11 @@ Total mental effort a team must hold to do its work; in *Team Topologies*, you s
 Vendor-neutral process that receives, processes, and exports telemetry. Deploy as agent, gateway, or sidecar.
 - **Used in**: ch05 §2
 - **Sources**: OpenTelemetry Collector docs — https://opentelemetry.io/docs/collector/
+
+### Conditional Access
+IdP feature that evaluates per-request signals (user, group, app, device-compliance, location, sign-in risk, authentication strength) and grants/denies/steps-up the session. The policy bundle is small, named, versioned, and applied uniformly — not redrawn per app. Implementations: Microsoft Entra Conditional Access, Okta sign-on policies, Google Context-Aware Access. Foundational primitive for AAL-tiered access (*AAL3* for admin, *AAL2* for routine SaaS) and for device-trust gating of PIM elevation.
+- **Used in**: ch12 §3, ch12 §7, ch12 §12, ch12 §14
+- **Sources**: Microsoft Entra docs *Conditional Access — Grant controls* — https://learn.microsoft.com/entra/identity/conditional-access/concept-conditional-access-grant ; Google Cloud *Context-Aware Access overview* — https://cloud.google.com/beyondcorp-enterprise/docs/overview ; NIST SP 800-207 *Zero Trust Architecture* §3.4.1 — https://csrc.nist.gov/pubs/sp/800/207/final
 
 ### Configuration as Data
 Approach to platform UX where workload intent is expressed in a small declarative schema and a controller renders it into runtime resources. *Kelsey Hightower*'s framing.
@@ -428,6 +443,11 @@ Runtime-security tool that detects suspicious syscalls via *eBPF*.
 - **Used in**: ch04, ch06 §3
 - **Sources**: Falco docs — https://falco.org/docs/
 
+### Federation (identity)
+Trust relationship in which one system (a relying party) accepts authenticated identity assertions issued by another (an *IdP* / Credential Service Provider). The point of federation is that disabling an account in the IdP disables it everywhere; SaaS that keep a parallel local password store defeat this and the leaver process silently. Workforce federation in this guide is *SAML 2.0* or *OIDC* against a single corporate IdP; workload federation is *OIDC Federation* (cloud STS trusting CI/cluster OIDC). See also *NIST 800-63C* federation assurance levels (FAL1/2/3).
+- **Used in**: ch12 §4
+- **Sources**: NIST SP 800-63C *Digital Identity Guidelines: Federation and Assertions* §5 — https://pages.nist.gov/800-63-3/sp800-63c.html ; OASIS *SAML V2.0 Core* — https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf ; OpenID Foundation *OpenID Connect Core 1.0* — https://openid.net/specs/openid-connect-core-1_0.html
+
 ### Feature Flag
 Runtime toggle separating deploy from release. Enables *canary*, kill-switches, and per-tenant rollout. Use a managed service or *OpenFeature*-conformant SDK.
 - **Used in**: ch03 §5
@@ -437,6 +457,11 @@ Runtime toggle separating deploy from release. Enables *canary*, kill-switches, 
 Cultural and operational practice for cloud financial management; iterates Inform → Optimize → Operate phases.
 - **Used in**: ch10 §1
 - **Sources**: FinOps Foundation — *Framework* — https://www.finops.org/framework/ ; J.R. Storment & Mike Fuller, *Cloud FinOps* (2nd ed., O'Reilly)
+
+### FIDO2
+FIDO Alliance + W3C standard for phishing-resistant authentication, comprising the *WebAuthn* browser API and CTAP (Client-to-Authenticator Protocol). Cryptographically binds the assertion to the relying-party origin — the property NIST SP 800-63B §5.2.5 calls *verifier impersonation resistance* — which is what makes it phishing-resistant where TOTP and push-MFA are not. Hardware authenticators (YubiKey, Titan) and platform authenticators backed by attested hardware (Touch ID, Windows Hello with TPM) both qualify.
+- **Used in**: ch12 §3, ch06 §13
+- **Sources**: FIDO Alliance, *FIDO2: WebAuthn + CTAP* — https://fidoalliance.org/fido2/ ; W3C *Web Authentication: An API for accessing Public Key Credentials, Level 2* — https://www.w3.org/TR/webauthn-2/ ; NIST SP 800-63B §5.2.5 *Verifier Impersonation Resistance* — https://pages.nist.gov/800-63-3/sp800-63b.html
 
 ### FIPS 140-2 / 140-3
 US/Canadian cryptographic-module validation programs. Required for federal workloads; influences HSM and library choices.
@@ -526,13 +551,23 @@ Practice of expressing infrastructure as version-controlled, machine-applied def
 
 ### IAP (Identity-Aware Proxy)
 Per-request user/device identity check at the proxy boundary; basis of *BeyondCorp*-style access. Cloudflare Access, Google IAP, *Teleport* implement variants.
-- **Used in**: ch06 §5
+- **Used in**: ch06 §13, ch12 §7
 - **Sources**: Google IAP docs — https://cloud.google.com/iap/docs/concepts-overview ; Rory Ward & Betsy Beyer, *BeyondCorp: A New Approach to Enterprise Security* (;login:, 2014) — https://research.google/pubs/beyondcorp-a-new-approach-to-enterprise-security/
 
 ### IDP (Internal Developer Platform)
-Curated set of self-service tools and golden paths a *platform team* offers to its internal customers. Distinct from *Backstage* (a *developer portal*).
+Curated set of self-service tools and golden paths a *platform team* offers to its internal customers. Distinct from *Backstage* (a *developer portal*). Disambiguation: not the same thing as *IdP* (Identity Provider).
 - **Used in**: ch11 §3
 - **Sources**: PlatformEngineering.org — *What is platform engineering?* — https://platformengineering.org/what-is-platform-engineering ; Humanitec, *Platform Engineering: A Guide* — https://humanitec.com/platform-engineering
+
+### IdP (Identity Provider)
+The system that authenticates human (workforce) principals and issues federated assertions (*SAML*, *OIDC*) to relying parties. NIST SP 800-63-3 calls this the Credential Service Provider (CSP); there is one CSP per identity, not per application. Workforce IdPs in scope of ch12: Microsoft Entra ID (formerly Azure AD), Okta, Google Workspace / Cloud Identity, JumpCloud, Keycloak. **Disambiguation**: distinct from *IDP* (Internal Developer Platform); also distinct from the workload-identity broker (cloud STS, *SPIRE*) — see ch12 §1.
+- **Used in**: ch12 §2
+- **Sources**: NIST SP 800-63-3 *Digital Identity Guidelines* §5 (CSP role and binding) — https://pages.nist.gov/800-63-3/ ; ISO/IEC 27001:2022 Annex A 5.16 *Identity management*
+
+### IGA (Identity Governance & Administration)
+Discipline (and the tool category) covering identity lifecycle, access requests and approvals, periodic access reviews/attestation, segregation-of-duties (SoD) policy, and audit evidence. The "governance" half of identity, complementing the authentication/authorisation runtime. Tools: SailPoint, Saviynt, Microsoft Entra ID Governance, Okta Identity Governance.
+- **Used in**: ch12 §10
+- **Sources**: ISO/IEC 27001:2022 Annex A 5.18 *Access rights* and A 5.3 *Segregation of duties* ; AICPA *SOC 2 Trust Services Criteria* CC6.2/CC6.3 (timely review and revocation) — https://www.aicpa.org/resources/article/2017-trust-services-criteria-with-revised-points-of-focus-2022 ; NIST SP 800-53 rev 5 AC-2(j), AC-5, AC-6 — https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final
 
 ### Idempotency Key
 Client-supplied unique ID a server uses to dedup retried operations; the foundation of *effectively-once* APIs.
@@ -581,10 +616,20 @@ Kyle Kingsbury's testing framework and report series that empirically probes dis
 - **Used in**: ch08 §1
 - **Sources**: Jepsen analyses — https://jepsen.io/analyses
 
+### JIT (Just-in-Time elevation) vs Standing Privilege
+**Standing privilege**: an identity holds an elevated role permanently. Source of most blast-radius growth — admin power present at 3 a.m. when an unrelated phish lands. **JIT elevation**: request → approve → assume role for N hours → auto-revoke. The default state of an engineer's identity is "no production write access"; they elevate when they need it and the grant expires. Implementations: Microsoft Entra PIM, AWS IAM Identity Center temporary elevated access, Google Cloud Privileged Access Manager. JIT also applies to vendor and contractor admin grants.
+- **Used in**: ch12 §6, ch12 §7
+- **Sources**: Microsoft Entra docs *Configure PIM* — https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure ; AWS *Temporary elevated access in IAM Identity Center* — https://docs.aws.amazon.com/singlesignon/latest/userguide/temporary-elevated-access.html ; Google Cloud *Privileged Access Manager overview* — https://cloud.google.com/iam/docs/pam-overview ; NIST SP 800-53 rev 5 AC-6 *Least Privilege*
+
 ### Jitter
 Random delay added to retries and scheduled jobs to prevent synchronized stampedes. Pair with capped exponential backoff.
 - **Used in**: ch09 §3
 - **Sources**: Marc Brooker (AWS), *Exponential Backoff and Jitter* — https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/
+
+### JML (Joiner / Mover / Leaver)
+The three workforce-identity lifecycle events that drive every downstream account-state change. **Joiner**: HR creates the worker, IdP provisions the identity, SCIM pushes accounts to the entitled SaaS. **Mover**: a transfer adds the new group memberships *and removes the old* — the failure mode most teams under-invest in, because standing privilege accumulates across a career and is invisible without an attestation pass. **Leaver**: HR termination disables the IdP account, revokes active sessions, triggers SCIM deprovisioning, and revokes OAuth refresh tokens within a published wall-clock SLO.
+- **Used in**: ch12 §5
+- **Sources**: ISO/IEC 27001:2022 Annex A 5.16 *Identity management*, A 5.18 *Access rights*, A 6.5 *Responsibilities after termination or change of employment* ; AICPA *SOC 2 TSC* CC6.2 / CC6.3 ; NIST SP 800-53 rev 5 AC-2 *Account Management* and AC-2(3) *Disable Accounts* — https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final
 
 ## K
 
@@ -701,10 +746,15 @@ NIST Secure Software Development Framework — practices that organizations shou
 
 ### NIST 800-207 (Zero Trust)
 NIST's reference architecture for zero-trust access. Per-request authn/z, no implicit trust based on network location.
-- **Used in**: ch06 §5
+- **Used in**: ch06 §12, ch12 §1
 - **Sources**: NIST SP 800-207 — https://csrc.nist.gov/publications/detail/sp/800-207/final
 
 ## O
+
+### OAuth 2.1 / PKCE
+OAuth 2.1 is the consolidating revision of OAuth 2.0 (RFC 6749 + RFC 8252 + BCPs) that mandates the security best practices that have hardened over the past decade: **PKCE** (RFC 7636) on every authorisation-code flow including confidential clients, no implicit flow, no resource-owner-password-credentials flow, exact-match redirect URIs, refresh-token rotation. PKCE itself defends the authorisation code against interception by binding the token exchange to a per-request `code_verifier`. Workforce sign-in to internal apps and CLIs in this guide uses OAuth 2.1 + PKCE; *OIDC* layers identity on top of the same flow.
+- **Used in**: ch12 §4
+- **Sources**: IETF *OAuth 2.0 Authorization Framework* RFC 6749 — https://datatracker.ietf.org/doc/html/rfc6749 ; *OAuth 2.0 for Native Apps* RFC 8252 — https://datatracker.ietf.org/doc/html/rfc8252 ; *Proof Key for Code Exchange* RFC 7636 — https://datatracker.ietf.org/doc/html/rfc7636 ; *OAuth 2.1 (draft)* — https://datatracker.ietf.org/doc/draft-ietf-oauth-v2-1/
 
 ### Object Lock / Bucket Lock / Immutable Blob
 Provider features that make object-storage objects immutable for a retention period, defending against ransomware and bad actors. AWS Object Lock, GCS Bucket Lock, Azure immutable blob storage.
@@ -720,6 +770,11 @@ Standard registry API used to push, pull, and reference container images and *OC
 Property of a system: how well you can answer *novel* questions about it from its outputs without shipping new code. **Disambiguation**: not "logs + metrics + traces"; per Charity Majors, the unit is high-cardinality, high-dimensional *wide events* you can slice arbitrarily.
 - **Used in**: ch05 §1
 - **Sources**: Charity Majors, *Observability — A 3-Year Retrospective* (2019) — https://thenewstack.io/observability-a-3-year-retrospective/ ; Majors, Fong-Jones, Miranda, *Observability Engineering* (O'Reilly, 2022)
+
+### OIDC (OpenID Connect)
+Identity layer on top of *OAuth 2.0/2.1*: the authorisation server additionally returns a signed `id_token` (JWT) describing the authenticated user. The federation protocol of choice for new SaaS and internal apps in this guide; *SAML* remains common in enterprise SaaS and is not deprecated. Same primitives that power workload identity (*OIDC Federation*).
+- **Used in**: ch12 §4
+- **Sources**: OpenID Foundation, *OpenID Connect Core 1.0* (incorporating errata set 2) — https://openid.net/specs/openid-connect-core-1_0.html ; NIST SP 800-63C *Federation and Assertions* — https://pages.nist.gov/800-63-3/sp800-63c.html
 
 ### OIDC Federation (Workload Identity Federation)
 Trusting an external *OIDC* provider (GitHub Actions, GitLab, *Kubernetes* SA tokens) to mint short-lived cloud credentials — replaces long-lived static keys.
@@ -792,6 +847,11 @@ Server destroyed and rebuilt from scratch on a regular cadence, eliminating *sno
 Restoring a database to any prior moment by replaying *WAL* / *binlog* against a base backup.
 - **Used in**: ch08 §2
 - **Sources**: PostgreSQL docs — *Continuous Archiving and PITR* — https://www.postgresql.org/docs/current/continuous-archiving.html
+
+### PIM / PAM (Privileged Identity / Access Management)
+Two overlapping names for the same workflow: request → approve → assume an elevated role for N hours → auto-revoke, with session detail recorded proportionate to blast radius. Microsoft uses **PIM** (Privileged Identity Management — built into Entra ID Governance); the older industry term **PAM** (Privileged Access Management) covers the same primitive plus session brokering, command logging, and password vaulting (CyberArk, BeyondTrust, Teleport, Delinea). Cloud-native equivalents: AWS IAM Identity Center temporary elevated access; Google Cloud Privileged Access Manager. Replaces standing privilege for sensitive roles (see *JIT vs Standing Privilege*).
+- **Used in**: ch12 §7
+- **Sources**: Microsoft Entra docs *What is Privileged Identity Management?* — https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure ; AWS *Temporary elevated access in IAM Identity Center* — https://docs.aws.amazon.com/singlesignon/latest/userguide/temporary-elevated-access.html ; Google Cloud *Privileged Access Manager overview* — https://cloud.google.com/iam/docs/pam-overview ; NIST SP 800-53 rev 5 AC-6(2)/AC-6(5) *Privileged Accounts*
 
 ### Platform Engineering
 Discipline of building an *Internal Developer Platform* as a product. **Disambiguation**: the platform is the *thinnest viable layer* that takes cognitive load off product teams; it is **not** an ops queue. Success measured by adoption and time-to-first-deploy, not ticket throughput.
@@ -872,6 +932,11 @@ Continuous "observe → diff → act" loop that drives actual state to declared 
 - **Used in**: ch01 §4
 - **Sources**: Kubernetes docs — *Controllers* — https://kubernetes.io/docs/concepts/architecture/controller/
 
+### Refresh Token
+Long-lived OAuth/OIDC credential the client uses to mint new short-lived access tokens without re-prompting the user. The leaver-process attack surface most teams forget: a terminated user's refresh token still works until it is explicitly revoked or expires, regardless of whether their IdP account is disabled. Mitigations: short access-token TTL with refresh-token *rotation* (each use issues a new refresh token and invalidates the prior), bind refresh tokens to the user's session in the IdP, revoke on session-revocation events from the IdP webhook. Measure leaver SLO end-to-end through token revocation, not just account disable.
+- **Used in**: ch12 §5
+- **Sources**: IETF *OAuth 2.0 Authorization Framework* RFC 6749 §1.5, §6 (refresh tokens) — https://datatracker.ietf.org/doc/html/rfc6749 ; *OAuth 2.0 Security Best Current Practice* RFC 9700 — https://datatracker.ietf.org/doc/html/rfc9700 ; OpenID Connect Core 1.0 §12 — https://openid.net/specs/openid-connect-core-1_0.html
+
 ### REINDEX CONCURRENTLY
 PostgreSQL command that rebuilds an index without long lock; standard tool for index bloat.
 - **Used in**: ch08 §6
@@ -909,6 +974,11 @@ Step-by-step operational instructions for handling a known scenario; ideally exe
 
 ## S
 
+### SAML 2.0
+OASIS standard for browser-based federated authentication: the IdP issues a signed XML assertion that the relying-party SaaS validates. Workhorse of enterprise SSO since 2005; not deprecated, no urgency to migrate working SAML to *OIDC*. New SaaS in this guide chooses OIDC if both are offered; SAML remains required where the vendor only ships SAML or where an existing federation is operating.
+- **Used in**: ch12 §4
+- **Sources**: OASIS *SAML V2.0 Core* (March 2005) — https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf ; NIST SP 800-63C *Federation and Assertions* — https://pages.nist.gov/800-63-3/sp800-63c.html
+
 ### Savings Plan / Reserved Instance
 AWS commitment-based discounts: *RIs* are instance-shape constrained; *Savings Plans* (Compute / EC2 Instance / SageMaker) trade flexibility for slightly less discount. Use **laddered** commitments.
 - **Used in**: ch10 §2
@@ -923,6 +993,11 @@ Machine-readable inventory of components in a build artifact. Two dominant forma
 Service that stores and validates *Avro* / *Protobuf* / *JSON Schema* versions and enforces compatibility (BACKWARD/FORWARD/FULL).
 - **Used in**: ch08 §3
 - **Sources**: Confluent Schema Registry docs — https://docs.confluent.io/platform/current/schema-registry/index.html
+
+### SCIM 2.0 (System for Cross-domain Identity Management)
+IETF standard (RFCs 7642–7644) for pushing identity lifecycle from a single source of truth (the *IdP* / HRIS) into downstream SaaS: create, update, group-membership, and — the load-bearing operation — *deactivate*. Without SCIM, the only deprovisioning path is *JIT*-only (account exists in the SaaS forever) or a human ticket. JIT-only is acceptable only as a fallback for SaaS that does not implement SCIM, paired with a scheduled reconciliation job.
+- **Used in**: ch12 §4
+- **Sources**: IETF *SCIM Definitions, Overview, Concepts, and Requirements* RFC 7642 — https://datatracker.ietf.org/doc/html/rfc7642 ; *SCIM Core Schema* RFC 7643 — https://datatracker.ietf.org/doc/html/rfc7643 ; *SCIM Protocol* RFC 7644 — https://datatracker.ietf.org/doc/html/rfc7644 ; ISO/IEC 27001:2022 Annex A 5.16
 
 ### Scorecard (OpenSSF)
 Tool that scores OSS repos on supply-chain hygiene checks (signed releases, branch protection, dependency-update tools).
@@ -981,7 +1056,7 @@ Developer productivity framework spanning Satisfaction, Performance, Activity, C
 
 ### SPIFFE / SPIRE
 Spec and reference implementation for cryptographic workload identity (*SPIFFE ID*, SVID). Foundation of zero-trust workload-to-workload auth.
-- **Used in**: ch06 §5, ch07 §6
+- **Used in**: ch06 §3, ch07 §6
 - **Sources**: SPIFFE spec — https://spiffe.io/docs/latest/spiffe-about/spiffe-concepts/
 
 ### Spot / Preemptible
@@ -1038,7 +1113,7 @@ Kubernetes-native CI primitive (*Tasks*, *Pipelines*, *PipelineRuns*) intended a
 
 ### Teleport
 Identity-aware access proxy for SSH, Kubernetes, databases, and apps. Implements zero-trust patterns from *NIST 800-207* and *BeyondCorp*.
-- **Used in**: ch06 §5
+- **Used in**: ch06 §13, ch12 §7
 - **Sources**: Teleport docs — https://goteleport.com/docs/
 
 ### Terraform
@@ -1127,10 +1202,10 @@ Durability mechanism: every write goes to an append-only log before mutating pag
 - **Used in**: ch08 §2
 - **Sources**: PostgreSQL docs — *Write-Ahead Logging* — https://www.postgresql.org/docs/current/wal-intro.html
 
-### WebAuthn / AAL3
-W3C standard for phishing-resistant authentication; AAL3 is NIST's highest authenticator-assurance level (hardware-backed, multi-factor).
-- **Used in**: ch06 §5
-- **Sources**: W3C WebAuthn Level 3 — https://www.w3.org/TR/webauthn-3/ ; NIST SP 800-63B — https://pages.nist.gov/800-63-3/sp800-63b.html
+### WebAuthn
+W3C browser API for phishing-resistant, public-key authentication; the front-end half of *FIDO2* (CTAP is the authenticator side). The relying-party origin is part of what the authenticator signs, which is the property NIST SP 800-63B §5.2.5 calls *verifier impersonation resistance* and what defeats classic credential phishing. Distinct from *AAL3*: WebAuthn is one mechanism that can satisfy AAL3 when paired with an appropriate authenticator (resident-key FIDO2 with user verification, PIV card with PIN, etc.) — "AAL3 = WebAuthn" is the common implementation, not the definition.
+- **Used in**: ch12 §3, ch06 §13
+- **Sources**: W3C *Web Authentication: An API for accessing Public Key Credentials, Level 2* — https://www.w3.org/TR/webauthn-2/ ; FIDO Alliance *FIDO2* — https://fidoalliance.org/fido2/ ; NIST SP 800-63B §5.2.5 — https://pages.nist.gov/800-63-3/sp800-63b.html
 
 ### Wide Event
 Single high-cardinality, high-dimensional event per unit of work, with all the context needed to slice and aggregate after the fact. The actual unit of *observability* per Majors et al.
@@ -1158,5 +1233,5 @@ Distributed SQL DB, PostgreSQL wire protocol, Raft replication; another point in
 
 ### Zero Trust
 Security model: never trust based on network location; verify identity, device posture, and authorization on every request. See *NIST 800-207*, *BeyondCorp*.
-- **Used in**: ch06 §5
+- **Used in**: ch06 §12, ch12 §1
 - **Sources**: NIST SP 800-207 — https://csrc.nist.gov/publications/detail/sp/800-207/final ; Google, *BeyondCorp* — https://www.beyondcorp.com/
