@@ -35,6 +35,7 @@ need.
 | 09 | [`docs/09-reliability.md`](./docs/09-reliability.md) | Google SRE canon: SLI / SLO / error budgets · incident response · chaos engineering · runbooks · on-call hygiene · postmortems. |
 | 10 | [`docs/10-finops.md`](./docs/10-finops.md) | Cost visibility · budgets & alerts · rightsizing · scale-to-zero · spot/preemptible · tagging discipline · reservations · the "cost of governance" trap. |
 | 11 | [`docs/11-platform-engineering.md`](./docs/11-platform-engineering.md) | Internal developer platforms · Backstage · golden paths · Team Topologies framing · "platform as a product". |
+| 12 | [`docs/12-identity.md`](./docs/12-identity.md) | Workforce / human identity · IdP choice · AAL & WebAuthn · SCIM JML · PAM/PIM · break-glass · IGA & access reviews. |
 
 ## Patterns & anti-patterns
 
